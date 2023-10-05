@@ -1,0 +1,15 @@
+version: '3.1'
+services:
+  db:
+    image: postgres:16-alpine
+    restart: always
+    ports:
+      - '5434:5452'
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_DB}
+    env_file:
+      - .env
+    volumes:
+      - .docker/database:/var/lib/postgresql/data
