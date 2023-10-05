@@ -4,7 +4,7 @@ services:
     image: postgres:16-alpine
     restart: always
     ports:
-      - '5434:5452'
+      - '5434:5432'
     environment:
       POSTGRES_USER: ${DATABASE_USER}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
