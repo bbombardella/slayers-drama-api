@@ -9,7 +9,9 @@ import { GoogleGuard } from './guards/google.guard';
 import { RefreshGuard } from './guards/refresh.guard';
 import { JwtGuard } from './guards/jwt.guard';
 import { MicrosoftGuard } from "./guards/microsoft.guard";
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
