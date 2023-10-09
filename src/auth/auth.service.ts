@@ -6,12 +6,14 @@ import * as bcrypt from 'bcrypt';
 import { SignUpDto } from './models/sign-up.dto';
 import { JwtService } from '@nestjs/jwt';
 import { TokenResponse } from './models/token-response.model';
+import { ApiConfigService } from '../api-config/api-config.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly jwtService: JwtService,
+    private readonly apiConfigService: ApiConfigService,
   ) {}
 
   async findUserByEmail(email: string): Promise<User | undefined> {
@@ -81,7 +83,7 @@ export class AuthService {
     const [accessToken, refreshTokenOriginal] = await Promise.all([
       this.jwtService.signAsync(this.getUserPayloadToken(user)),
       this.jwtService.signAsync(this.getUserPayloadToken(user), {
-        secret: process.env.JWT_REFRESH_SECRET,
+        secret: this.apiConfigService.providers.jwt.refreshSecret,
       }),
     ]);
 
