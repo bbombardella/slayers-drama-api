@@ -38,6 +38,7 @@ model Movie {
   budget       Decimal
   poster_path  String
   tagline      String
+  published    Boolean  @default(false)
   tmdb_id      Int      @unique
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
