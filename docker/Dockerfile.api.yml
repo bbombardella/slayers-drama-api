@@ -1,0 +1,29 @@
+# Utiliser une image Node.js en tant qu'étape de construction
+FROM node:18 AS build
+
+WORKDIR /app
+
+# Cloner le projet depuis Git (assurez-vous d'ajuster l'URL du repository)
+RUN git clone https://github.com/bbombardella/slayers-drama-api.git .
+
+# Installer les dépendances
+RUN npm install
+
+# Construire l'application Nest.js
+RUN npm run build
+
+# Étape finale, en utilisant une image légère Node.js
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copier les fichiers de l'étape de construction
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/node_modules ./node_modules
+COPY .env /app/.env
+
+# Exposer le port sur lequel l'API écoutera (assurez-vous de configurer le port dans votre application Nest.js)
+EXPOSE 3000
+
+# Démarrer l'API Nest.js
+CMD ["node", "dist/main.js"]

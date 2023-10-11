@@ -1,0 +1,22 @@
+# Stage de construction (build stage)
+FROM node:18 AS build
+
+WORKDIR /app
+
+# Cloner le projet depuis Git
+RUN git clone https://github.com/bbombardella/slayers-drama-front.git .
+
+# Installer les dépendances et construire l'application Angular
+RUN npm install
+RUN npm run build
+
+# Étape finale, en utilisant l'image NGINX
+FROM nginx:alpine
+
+# Copier les fichiers construits depuis le stage de build dans le conteneur NGINX
+COPY --from=build /app/dist/slayers_drama/** /usr/share/nginx/html
+
+# Exposer le port sur lequel NGINX écoute (généralement le port 80 par défaut)
+EXPOSE 80
+
+# Aucun besoin de CMD, l'image NGINX gère le démarrage automatiquement
