@@ -1,4 +1,7 @@
 version: '3'
+# * -------------------------------------------------------------- * #
+# * docker-compose -p slayers-drama up --build -d --force-recreate * #
+# * -------------------------------------------------------------- * #
 services:
   front:
     build:
@@ -22,3 +25,8 @@ services:
       POSTGRES_DB: slayers
     ports:
       - "5434:5432"
+    env_file:
+      - .env
+    volumes:
+      - .docker/database:/var/lib/postgresql/data
+      - .scripts:/docker-entrypoint-initdb.d
