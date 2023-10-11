@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ConfigDatabase, ConfigProviders } from './model';
+import { ConfigDatabase, ConfigProviders, ConfigTMDB } from "./model";
 
 @Injectable()
 export class ApiConfigService {
@@ -12,5 +12,9 @@ export class ApiConfigService {
 
   get providers(): ConfigProviders {
     return this.configService.get<ConfigProviders>('providers');
+  }
+
+  get tmdb(): ConfigTMDB {
+    return this.configService.get<ConfigTMDB>('tmdb');
   }
 }

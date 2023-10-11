@@ -6,4 +6,6 @@ export const validationSchema = Joi.object({
   JWT_REFRESH_SECRET: Joi.string().not(Joi.string().empty()),
   GOOGLE_CLIENT_ID: Joi.string().not(Joi.string().empty()),
   MICROSOFT_CLIENT_ID: Joi.string().not(Joi.string().empty()),
+  TMDB_API_KEY: Joi.string().not(Joi.string().empty()),
+  TMDB_URL: Joi.string().not(Joi.string().empty()),
 });

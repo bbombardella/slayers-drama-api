@@ -16,4 +16,8 @@ export default (): Config => ({
       clientId: process.env.MICROSOFT_CLIENT_ID,
     },
   },
+  tmdb: {
+    apiKey: process.env.TMDB_API_KEY,
+    url: process.env.TMDB_URL,
+  },
 });

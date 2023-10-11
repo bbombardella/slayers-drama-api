@@ -40,12 +40,25 @@ export class ConfigProviders {
   }
 }
 
+export class ConfigTMDB {
+  apiKey: string;
+  url: string;
+
+  constructor(apiKey: string, url: string) {
+    this.apiKey = apiKey;
+    this.url = url;
+  }
+}
+
 export class Config {
   database: ConfigDatabase;
   providers: ConfigProviders;
+  tmdb: ConfigTMDB;
 
-  constructor(database: ConfigDatabase, providers: ConfigProviders) {
+
+  constructor(database: ConfigDatabase, providers: ConfigProviders, tmdb: ConfigTMDB) {
     this.database = database;
     this.providers = providers;
+    this.tmdb = tmdb;
   }
 }
