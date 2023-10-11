@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import { ApiConfigService } from '../api-config/api-config.service';
 
 @Injectable()
 export class PrismaService extends PrismaClient {
-  constructor() {
+  constructor(private readonly apiConfigService: ApiConfigService) {
     super({
       datasources: {
         db: {
-          url: process.env.DATABASE_URL,
+          url: apiConfigService.database.url,
         },
       },
     });
