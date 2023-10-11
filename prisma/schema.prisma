@@ -21,15 +21,15 @@ model User {
 }
 
 model Genre {
-  id        Int              @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   title     String
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
-  movies    GenresOnMovies[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  movies    Movie[]
 }
 
 model Movie {
-  id           Int              @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   title        String
   release_date DateTime
   overview     String
@@ -38,21 +38,12 @@ model Movie {
   budget       Decimal
   poster_path  String
   tagline      String
-  tmdb_id      Int              @unique
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
-  genres       GenresOnMovies[]
+  tmdb_id      Int      @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  genres       Genre[]
 
   @@index([title(ops: raw("gin_trgm_ops"))], type: Gin)
   @@index([tagline(ops: raw("gin_trgm_ops"))], type: Gin)
   @@index([overview(ops: raw("gin_trgm_ops"))], type: Gin)
-}
-
-model GenresOnMovies {
-  movieId Int
-  movie   Movie @relation(fields: [movieId], references: [id])
-  genreId Int
-  genre   Genre @relation(fields: [genreId], references: [id])
-
-  @@id([movieId, genreId])
 }
