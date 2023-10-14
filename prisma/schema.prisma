@@ -16,20 +16,27 @@ model User {
   googleId     String?  @unique
   microsoftId  String?  @unique
   refreshToken String?
+  role         Role     @default(USER)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+enum Role {
+  USER
+  ADMIN
 }
 
 model Genre {
   id        Int      @id @default(autoincrement())
   title     String
+  tmdb_id   Int      @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   movies    Movie[]
 }
 
 model Movie {
-  id           Int      @id @default(autoincrement())
+  id           Int         @id @default(autoincrement())
   title        String
   release_date DateTime
   overview     String
@@ -38,13 +45,41 @@ model Movie {
   budget       Decimal
   poster_path  String
   tagline      String
-  published    Boolean  @default(false)
-  tmdb_id      Int      @unique
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  published    Boolean     @default(false)
+  tmdb_id      Int         @unique
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
   genres       Genre[]
+  screenings   Screening[]
 
   @@index([title(ops: raw("gin_trgm_ops"))], type: Gin)
   @@index([tagline(ops: raw("gin_trgm_ops"))], type: Gin)
   @@index([overview(ops: raw("gin_trgm_ops"))], type: Gin)
+}
+
+model Cinema {
+  id         Int         @id @default(autoincrement())
+  name       String
+  city       String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  screenings Screening[]
+
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin)
+  @@index([city(ops: raw("gin_trgm_ops"))], type: Gin)
+}
+
+model Screening {
+  id        Int      @id @default(autoincrement())
+  start     DateTime
+  end       DateTime
+  cinema    Cinema   @relation(fields: [cinemaId], references: [id])
+  cinemaId  Int
+  movie     Movie    @relation(fields: [movieId], references: [id])
+  movieId   Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([cinemaId])
+  @@index([movieId])
 }
