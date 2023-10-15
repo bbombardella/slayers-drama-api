@@ -7,6 +7,7 @@ import { MovieModule } from './movie/movie.module';
 import { GenreModule } from './genre/genre.module';
 import { TmdbApiModule } from './tmdb-api/tmdb-api.module';
 import { CinemaModule } from './cinema/cinema.module';
+import { ScreeningModule } from './screening/screening.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { CinemaModule } from './cinema/cinema.module';
     GenreModule,
     TmdbApiModule,
     CinemaModule,
+    ScreeningModule,
   ],
   controllers: [],
   providers: [AppService],
