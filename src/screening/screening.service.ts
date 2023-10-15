@@ -8,6 +8,7 @@ import {
 } from '../prisma/paginator';
 import { Screening } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { GroupedScreeningDto } from './dto/grouped-screening.dto';
 
 @Injectable()
 export class ScreeningService {
@@ -62,5 +63,24 @@ export class ScreeningService {
     return this.prismaService.screening.delete({
       where: { id },
     });
+  }
+
+  groupScreeningByDate(screenings: Screening[]): GroupedScreeningDto {
+    return screenings.reduce((grouped, item) => {
+      // Vérifie si le groupe existe déjà
+      const startDate = new Date(item.start);
+      startDate.setUTCHours(0, 0, 0);
+
+      const dateKey = startDate.toISOString().split('T')[0];
+      if (!grouped[dateKey]) {
+        // Si le groupe n'existe pas, créez-le en utilisant la propriété comme clé
+        grouped[dateKey] = [];
+      }
+
+      // Ajoutez l'élément à la catégorie appropriée
+      grouped[dateKey].push(item);
+
+      return grouped;
+    }, {});
   }
 }

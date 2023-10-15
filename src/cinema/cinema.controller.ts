@@ -7,7 +7,8 @@ import {
   Param,
   Delete,
   ParseIntPipe,
-  Query, UseGuards,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CinemaService } from './cinema.service';
 import { CreateCinemaDto } from './dto/create-cinema.dto';
@@ -17,6 +18,7 @@ import { PaginatedResult, PaginateOptions } from '../prisma/paginator';
 import { Cinema, Role } from '@prisma/client';
 import { Roles } from '../decorators/roles.decorator';
 import { JwtGuard } from '../auth/guards/jwt.guard';
+import { CinemaDetailsDto } from './dto/cinema-details.dto';
 
 @Controller('cinema')
 @ApiTags('cinema')
@@ -41,6 +43,21 @@ export class CinemaController {
     @Query() pageable: PaginateOptions,
   ): Promise<PaginatedResult<Cinema>> {
     return this.cinemaService.findAll(pageable);
+  }
+
+  @Get(':id/details')
+  @ApiOperation({
+    summary: "Retrieve cinema's details by its id",
+  })
+  @ApiParam({
+    name: 'id',
+    description: "Cinema's ID",
+    required: true,
+  })
+  findOneDetails(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<CinemaDetailsDto> {
+    return this.cinemaService.findOneDetails(id);
   }
 
   @Get(':id')
