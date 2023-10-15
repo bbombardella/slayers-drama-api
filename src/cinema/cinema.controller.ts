@@ -19,6 +19,7 @@ import { Cinema, Role } from '@prisma/client';
 import { Roles } from '../decorators/roles.decorator';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { CinemaDetailsDto } from './dto/cinema-details.dto';
+import { SearchDto } from '../dto/search.dto';
 
 @Controller('cinema')
 @ApiTags('cinema')
@@ -43,6 +44,19 @@ export class CinemaController {
     @Query() pageable: PaginateOptions,
   ): Promise<PaginatedResult<Cinema>> {
     return this.cinemaService.findAll(pageable);
+  }
+
+  @Get('search/:query')
+  @ApiOperation({
+    summary: 'Search cinema in database. Results with pagination',
+  })
+  @ApiParam({
+    name: 'query',
+    description: 'The search pattern',
+    required: true,
+  })
+  search(@Param() params: SearchDto): Promise<PaginatedResult<Cinema>> {
+    return this.cinemaService.search(params.query);
   }
 
   @Get(':id/details')

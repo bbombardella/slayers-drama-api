@@ -104,4 +104,25 @@ export class CinemaService {
       where: { id },
     });
   }
+
+  async search(query: string): Promise<PaginatedResult<Cinema>> {
+    return this.cinemaPaginator(this.prismaService.cinema, {
+      where: {
+        OR: [
+          {
+            name: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+          {
+            city: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+        ],
+      },
+    });
+  }
 }

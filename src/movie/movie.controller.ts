@@ -18,6 +18,7 @@ import { MovieDetails } from '../tmdb-api/models';
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../decorators/roles.decorator';
 import { JwtGuard } from '../auth/guards/jwt.guard';
+import { SearchDto } from '../dto/search.dto';
 
 @Controller('movie')
 @ApiTags('movie')
@@ -105,8 +106,8 @@ export class MovieController {
     description: 'The search pattern',
     required: true,
   })
-  search(@Param('query') query: string): Promise<PaginatedResult<Movie>> {
-    return this.movieService.search(query);
+  search(@Param() params: SearchDto): Promise<PaginatedResult<Movie>> {
+    return this.movieService.search(params.query);
   }
 
   @Get(':id')
