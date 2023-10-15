@@ -26,7 +26,7 @@ export interface PersonWithMediaType extends Person {
   media_type: 'person';
 }
 
-export interface Movie {
+export interface MovieTmdb {
   id: number;
   poster_path: string;
   adult: boolean;
@@ -43,7 +43,7 @@ export interface Movie {
   vote_average: number;
 }
 
-export interface MovieWithMediaType extends Movie {
+export interface MovieWithMediaType extends MovieTmdb {
   media_type: 'movie';
 }
 

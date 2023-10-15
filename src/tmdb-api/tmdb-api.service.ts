@@ -12,7 +12,7 @@ export class TmdbApiService {
     private readonly httpService: HttpService,
   ) {}
 
-  get defaultQueryString(): any {
+  get defaultQueryString(): { api_key: string; language: string } {
     return {
       api_key: this.apiConfigService.tmdb.apiKey,
       language: 'fr-FR',
