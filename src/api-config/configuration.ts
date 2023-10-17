@@ -19,5 +19,11 @@ export default (): Config => ({
   tmdb: {
     apiKey: process.env.TMDB_API_KEY,
     url: process.env.TMDB_URL,
+    urlImageBase: process.env.TMDB_URL_IMAGE_BASE,
+  },
+  cloudinary: {
+    name: process.env.CLOUDINARY_NAME,
+    apiKey: process.env.CLOUDINARY_API_KEY,
+    apiSecret: process.env.CLOUDINARY_API_SECRET,
   },
 });

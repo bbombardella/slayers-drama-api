@@ -43,10 +43,24 @@ export class ConfigProviders {
 export class ConfigTMDB {
   apiKey: string;
   url: string;
+  urlImageBase: string;
 
-  constructor(apiKey: string, url: string) {
+  constructor(apiKey: string, url: string, urlImageBase: string) {
     this.apiKey = apiKey;
     this.url = url;
+    this.urlImageBase = urlImageBase;
+  }
+}
+
+export class ConfigCloudinary {
+  name: string;
+  apiKey: string;
+  apiSecret: string;
+
+  constructor(name: string, apiKey: string, apiSecret: string) {
+    this.name = name;
+    this.apiKey = apiKey;
+    this.apiSecret = apiSecret;
   }
 }
 
@@ -54,11 +68,17 @@ export class Config {
   database: ConfigDatabase;
   providers: ConfigProviders;
   tmdb: ConfigTMDB;
+  cloudinary: ConfigCloudinary;
 
-
-  constructor(database: ConfigDatabase, providers: ConfigProviders, tmdb: ConfigTMDB) {
+  constructor(
+    database: ConfigDatabase,
+    providers: ConfigProviders,
+    tmdb: ConfigTMDB,
+    cloudinary: ConfigCloudinary,
+  ) {
     this.database = database;
     this.providers = providers;
     this.tmdb = tmdb;
+    this.cloudinary = cloudinary;
   }
 }

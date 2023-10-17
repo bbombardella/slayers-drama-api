@@ -29,28 +29,29 @@ enum Role {
 model Genre {
   id        Int      @id @default(autoincrement())
   title     String
-  tmdb_id   Int      @unique
+  tmdbId    Int      @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   movies    Movie[]
 }
 
 model Movie {
-  id           Int         @id @default(autoincrement())
-  title        String
-  release_date DateTime
-  overview     String
-  popularity   Decimal
-  vote_average Decimal
-  budget       Decimal
-  poster_path  String
-  tagline      String
-  published    Boolean     @default(false)
-  tmdb_id      Int         @unique
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  genres       Genre[]
-  screenings   Screening[]
+  id            Int         @id @default(autoincrement())
+  title         String
+  releaseDate   DateTime
+  overview      String
+  popularity    Decimal
+  voteAverage   Decimal
+  budget        Decimal
+  poster        Image       @relation(fields: [posterImageId], references: [id])
+  tagline       String
+  published     Boolean     @default(false)
+  tmdbId        Int         @unique
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  genres        Genre[]
+  screenings    Screening[]
+  posterImageId Int         @unique
 
   @@index([title(ops: raw("gin_trgm_ops"))], type: Gin)
   @@index([tagline(ops: raw("gin_trgm_ops"))], type: Gin)
@@ -82,4 +83,13 @@ model Screening {
 
   @@index([cinemaId])
   @@index([movieId])
+}
+
+model Image {
+  id                 Int      @id @default(autoincrement())
+  url                String
+  cloudinaryPublicId String   @unique
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  Movie              Movie[]
 }

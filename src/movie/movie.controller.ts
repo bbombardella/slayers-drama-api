@@ -7,8 +7,8 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Query,
-  UseGuards,
+  Query, UploadedFile,
+  UseGuards, UseInterceptors,
 } from '@nestjs/common';
 import { MovieService } from './movie.service';
 import { MovieDto } from './models/movie.dto';
@@ -19,6 +19,7 @@ import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../decorators/roles.decorator';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { SearchDto } from '../dto/search.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('movie')
 @ApiTags('movie')
@@ -95,6 +96,40 @@ export class MovieController {
     @Body() ids: number[],
   ): Promise<Movie> {
     return this.movieService.detachGenre(movieId, ids);
+  }
+
+  @Patch(':id/poster/tmdb')
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtGuard)
+  @ApiOperation({
+    summary: "Update movie's poster from The Movie Database",
+  })
+  @ApiParam({
+    name: 'id',
+    description: "Movie's ID",
+    required: true,
+  })
+  updateImageTmdb(@Param('id', ParseIntPipe) movieId: number): Promise<Movie> {
+    return this.movieService.updateImageFromTmdb(movieId);
+  }
+
+  @Patch(':id/poster')
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtGuard)
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({
+    summary: "Update movie's poster",
+  })
+  @ApiParam({
+    name: 'id',
+    description: "Movie's ID",
+    required: true,
+  })
+  updateImage(
+    @Param('id', ParseIntPipe) movieId: number,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<Movie> {
+    return this.movieService.updateImageFromFile(movieId, file);
   }
 
   @Get('search/:query')
