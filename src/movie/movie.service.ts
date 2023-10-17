@@ -4,7 +4,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { MovieDto } from './models/movie.dto';
 import { TmdbApiService } from '../tmdb-api/tmdb-api.service';
 import { lastValueFrom } from 'rxjs';
 import { MovieDetails } from '../tmdb-api/models';
@@ -16,6 +15,8 @@ import {
 } from '../prisma/paginator';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { ImageService } from '../image/image.service';
+import { MovieEntity } from './entities/movie.entity';
+import { UpdateMovieDto } from './dto/update-movie.dto';
 
 @Injectable()
 export class MovieService {
@@ -40,13 +41,15 @@ export class MovieService {
     return this.moviePaginator(this.prismaService.movie, undefined, pageable);
   }
 
-  async findOne(id: number): Promise<Movie> {
-    return this.prismaService.movie.findUnique({
-      where: { id },
-      include: {
-        genres: true,
-      },
-    });
+  async findOne(id: number): Promise<MovieEntity> {
+    return new MovieEntity(
+      await this.prismaService.movie.findUnique({
+        where: { id },
+        include: {
+          genres: true,
+        },
+      }),
+    );
   }
 
   async findOneTmdb(id: number): Promise<MovieDetails> {
@@ -62,13 +65,13 @@ export class MovieService {
     return movieTmdb;
   }
 
-  async create(id: number): Promise<Movie> {
+  async create(id: number): Promise<MovieEntity> {
     const movieTmdb = await this.findOneTmdb(id);
     const image = await this.cloudinaryService.uploadFromRemote(
       this.tmdbApiService.getImageUrl(movieTmdb.poster_path),
     );
 
-    return this.prismaService.movie.create({
+    const newMovie = await this.prismaService.movie.create({
       data: {
         title: movieTmdb.title,
         releaseDate: new Date(movieTmdb.release_date),
@@ -99,26 +102,32 @@ export class MovieService {
         },
       },
     });
+
+    return new MovieEntity(newMovie);
   }
 
-  async update(id: number, dto: MovieDto): Promise<Movie> {
-    return this.prismaService.movie.update({
-      where: { id },
-      data: {
-        ...dto,
-        updatedAt: new Date(),
-      },
-    });
+  async update(id: number, dto: UpdateMovieDto): Promise<MovieEntity> {
+    return new MovieEntity(
+      await this.prismaService.movie.update({
+        where: { id },
+        data: {
+          ...dto,
+          updatedAt: new Date(),
+        },
+      }),
+    );
   }
 
-  async delete(id: number): Promise<Movie> {
-    return this.prismaService.movie.delete({
-      where: { id },
-    });
+  async delete(id: number): Promise<MovieEntity> {
+    return new MovieEntity(
+      await this.prismaService.movie.delete({
+        where: { id },
+      }),
+    );
   }
 
-  async search(query: string): Promise<PaginatedResult<Movie>> {
-    return this.moviePaginator(this.prismaService.movie, {
+  async search(query: string): Promise<PaginatedResult<MovieEntity>> {
+    const result = await this.moviePaginator(this.prismaService.movie, {
       where: {
         OR: [
           {
@@ -142,36 +151,43 @@ export class MovieService {
         ],
       },
     });
+    result.data = result.data.map((m) => new MovieEntity(m));
+
+    return result;
   }
 
-  async attachGenre(movieId: number, ids: number[]): Promise<Movie> {
-    return this.prismaService.movie.update({
-      where: { id: movieId },
-      data: {
-        genres: {
-          connect: ids.map((i) => ({ id: i })),
+  async attachGenre(movieId: number, ids: number[]): Promise<MovieEntity> {
+    return new MovieEntity(
+      await this.prismaService.movie.update({
+        where: { id: movieId },
+        data: {
+          genres: {
+            connect: ids.map((i) => ({ id: i })),
+          },
         },
-      },
-      include: { genres: true },
-    });
+        include: { genres: true },
+      }),
+    );
   }
 
-  async detachGenre(movieId: number, ids: number[]): Promise<Movie> {
-    return this.prismaService.movie.update({
-      where: { id: movieId },
-      data: {
-        genres: {
-          disconnect: ids.map((i) => ({ id: i })),
+  async detachGenre(movieId: number, ids: number[]): Promise<MovieEntity> {
+    return new MovieEntity(
+      await this.prismaService.movie.update({
+        where: { id: movieId },
+        data: {
+          genres: {
+            disconnect: ids.map((i) => ({ id: i })),
+          },
         },
-      },
-      include: { genres: true },
-    });
+        include: { genres: true },
+      }),
+    );
   }
 
   async updateImageFromFile(
     id: number,
     file: Express.Multer.File,
-  ): Promise<Movie> {
+  ): Promise<MovieEntity> {
     const movie = await this.findOne(id);
     const image = await this.cloudinaryService.uploadFile(file);
 
@@ -183,7 +199,7 @@ export class MovieService {
     return this.findOne(id);
   }
 
-  async updateImageFromTmdb(id: number): Promise<Movie> {
+  async updateImageFromTmdb(id: number): Promise<MovieEntity> {
     const movie = await this.findOne(id);
     const movieTmdb = await this.findOneTmdb(movie.tmdbId);
 

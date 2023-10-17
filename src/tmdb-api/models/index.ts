@@ -1,3 +1,5 @@
+import { ApiProperty } from '@nestjs/swagger';
+
 export * from './movies';
 
 export type MediaType = 'movie' | 'tv' | 'person';
@@ -74,8 +76,11 @@ export interface TVWithMediaType extends TV {
   media_type: 'tv';
 }
 
-export interface Genre {
+export class Genre {
+  @ApiProperty()
   id: number;
+
+  @ApiProperty()
   name: string;
 }
 
@@ -87,15 +92,25 @@ export interface ExternalIds {
   id: number;
 }
 
-export interface ProductionCompany {
+export class ProductionCompany {
+  @ApiProperty()
   id: number;
+
+  @ApiProperty()
   logo_path: string;
+
+  @ApiProperty()
   name: string;
+
+  @ApiProperty()
   origin_country: string;
 }
 
-export interface ProductionCountry {
+export class ProductionCountry {
+  @ApiProperty()
   iso_3166_1: string;
+
+  @ApiProperty()
   name: string;
 }
 

@@ -1,15 +1,23 @@
 import { Body, Controller, Delete, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { User } from '@prisma/client';
-import { SignUpDto } from './models/sign-up.dto';
+import { SignUpDto } from './dto/sign-up.dto';
 import { LocalGuard } from './guards/local.guard';
-import { TokenResponse } from './models/token-response.model';
+import { TokenResponseDto } from './dto/token-response.dto';
 import { CurrentUser } from '../decorators/current-user.decorator';
 import { GoogleGuard } from './guards/google.guard';
 import { RefreshGuard } from './guards/refresh.guard';
 import { JwtGuard } from './guards/jwt.guard';
 import { MicrosoftGuard } from './guards/microsoft.guard';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
+import { UserEntity } from './entities/user.entity';
+import { LoginDto } from './dto/login.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -17,37 +25,62 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('/sign-up')
-  signUp(@Body() signUpRequest: SignUpDto): Promise<User> {
+  @ApiOperation({
+    summary: 'Create an user',
+  })
+  @ApiCreatedResponse({ type: UserEntity })
+  async signUp(@Body() signUpRequest: SignUpDto): Promise<UserEntity> {
     return this.authService.signUp(signUpRequest);
   }
 
   @Post('/login')
   @UseGuards(LocalGuard)
-  signIn(@CurrentUser() user: User): Promise<TokenResponse> {
+  @ApiOperation({
+    summary: 'Login via login/password',
+  })
+  @ApiBody({ type: LoginDto })
+  @ApiOkResponse({ type: TokenResponseDto })
+  signIn(@CurrentUser() user: User): Promise<TokenResponseDto> {
     return this.authService.login(user);
   }
 
   @Delete('/logout')
   @UseGuards(JwtGuard)
+  @ApiOperation({
+    summary: 'Disconnect user',
+  })
+  @ApiOkResponse()
   logout(@CurrentUser() user: User): Promise<void> {
     return this.authService.logout(user);
   }
 
   @Get('/refresh')
   @UseGuards(RefreshGuard)
-  refresh(@CurrentUser() user: User): Promise<TokenResponse> {
+  @ApiOperation({
+    summary: 'Create new token thanks to refresh token',
+  })
+  @ApiOkResponse({ type: TokenResponseDto })
+  refresh(@CurrentUser() user: User): Promise<TokenResponseDto> {
     return this.authService.login(user);
   }
 
   @Get('/google/login')
   @UseGuards(GoogleGuard)
-  googleCallback(@CurrentUser() user: User): Promise<TokenResponse> {
+  @ApiOperation({
+    summary: 'Login via Google provider',
+  })
+  @ApiOkResponse({ type: TokenResponseDto })
+  googleCallback(@CurrentUser() user: User): Promise<TokenResponseDto> {
     return this.authService.login(user);
   }
 
   @Get('/microsoft/login')
   @UseGuards(MicrosoftGuard)
-  microsoftCallback(@CurrentUser() user: User): Promise<TokenResponse> {
+  @ApiOperation({
+    summary: 'Login via Microsoft provider',
+  })
+  @ApiOkResponse({ type: TokenResponseDto })
+  microsoftCallback(@CurrentUser() user: User): Promise<TokenResponseDto> {
     return this.authService.login(user);
   }
 }

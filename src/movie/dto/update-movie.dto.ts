@@ -1,23 +1,26 @@
-import { IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Decimal } from '@prisma/client/runtime/library';
+import {
+  IsBoolean,
+  IsDate,
+  IsNumber,
+  IsString,
+  MinLength,
+} from 'class-validator';
 
-export class MovieDto {
-  @ApiProperty()
-  @IsNumber()
-  id: number;
-
+export class UpdateMovieDto {
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
+  @MinLength(3)
   title: string;
 
   @ApiProperty()
-  @IsDateString()
-  release_date: Date;
+  @IsDate()
+  releaseDate: Date;
 
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
+  @MinLength(3)
   overview: string;
 
   @ApiProperty()
@@ -26,7 +29,7 @@ export class MovieDto {
 
   @ApiProperty()
   @IsNumber()
-  vote_average: number;
+  voteAverage: number;
 
   @ApiProperty()
   @IsNumber()
@@ -34,13 +37,10 @@ export class MovieDto {
 
   @ApiProperty()
   @IsString()
-  poster_path: string;
-
-  @ApiProperty()
-  @IsString()
+  @MinLength(3)
   tagline: string;
 
   @ApiProperty()
-  @IsNumber()
-  tmdb_id: number;
+  @IsBoolean()
+  published: boolean;
 }

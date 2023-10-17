@@ -12,11 +12,17 @@ import {
 import { ScreeningService } from './screening.service';
 import { CreateScreeningDto } from './dto/create-screening.dto';
 import { UpdateScreeningDto } from './dto/update-screening.dto';
-import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse, ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Roles } from '../decorators/roles.decorator';
 import { Role, Screening } from '@prisma/client';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { PaginatedResult } from '../prisma/paginator';
+import { ScreeningEntity } from './entities/screening.entity';
 
 @Controller('screening')
 @ApiTags('screening')
@@ -29,7 +35,10 @@ export class ScreeningController {
   @ApiOperation({
     summary: 'Create a new screening',
   })
-  create(@Body() createScreeningDto: CreateScreeningDto): Promise<Screening> {
+  @ApiCreatedResponse({ type: ScreeningEntity })
+  create(
+    @Body() createScreeningDto: CreateScreeningDto,
+  ): Promise<ScreeningEntity> {
     return this.screeningService.create(createScreeningDto);
   }
 
@@ -37,7 +46,8 @@ export class ScreeningController {
   @ApiOperation({
     summary: 'Retrieve all screenings with pagination results',
   })
-  findAll(): Promise<PaginatedResult<Screening>> {
+  @ApiOkResponse({ type: PaginatedResult<ScreeningEntity> })
+  findAll(): Promise<PaginatedResult<ScreeningEntity>> {
     return this.screeningService.findAll();
   }
 
@@ -50,7 +60,8 @@ export class ScreeningController {
     description: "Screening's ID",
     required: true,
   })
-  findOne(@Param('id', ParseIntPipe) id: number): Promise<Screening> {
+  @ApiOkResponse({ type: ScreeningEntity })
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<ScreeningEntity> {
     return this.screeningService.findOne(id);
   }
 
@@ -65,10 +76,11 @@ export class ScreeningController {
     description: "Screening's ID",
     required: true,
   })
+  @ApiCreatedResponse({ type: ScreeningEntity })
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateScreeningDto: UpdateScreeningDto,
-  ): Promise<Screening> {
+  ): Promise<ScreeningEntity> {
     return this.screeningService.update(id, updateScreeningDto);
   }
 
@@ -83,7 +95,8 @@ export class ScreeningController {
     description: "Screening's ID",
     required: true,
   })
-  remove(@Param('id', ParseIntPipe) id: number): Promise<Screening> {
+  @ApiOkResponse({ type: ScreeningEntity })
+  remove(@Param('id', ParseIntPipe) id: number): Promise<ScreeningEntity> {
     return this.screeningService.remove(id);
   }
 }
