@@ -7,19 +7,28 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Query, UploadedFile,
-  UseGuards, UseInterceptors,
+  Query,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { MovieService } from './movie.service';
-import { MovieDto } from './models/movie.dto';
 import { Movie, Role } from '@prisma/client';
 import { PaginatedResult, PaginateOptions } from '../prisma/paginator';
 import { MovieDetails } from '../tmdb-api/models';
-import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Roles } from '../decorators/roles.decorator';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { SearchDto } from '../dto/search.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { MovieEntity } from './entities/movie.entity';
+import { UpdateMovieDto } from './dto/update-movie.dto';
 
 @Controller('movie')
 @ApiTags('movie')
@@ -30,6 +39,7 @@ export class MovieController {
   @ApiOperation({
     summary: 'Retrieve all movies with pagination results',
   })
+  @ApiOkResponse({ type: PaginatedResult<Movie> })
   findAll(@Query() pageable: PaginateOptions): Promise<PaginatedResult<Movie>> {
     return this.movieService.findAll(pageable);
   }
@@ -43,6 +53,7 @@ export class MovieController {
     description: 'ID from The Movie Database',
     required: true,
   })
+  @ApiOkResponse({ type: MovieDetails })
   findOneTmdb(@Param('id', ParseIntPipe) id: number): Promise<MovieDetails> {
     return this.movieService.findOneTmdb(id);
   }
@@ -58,7 +69,8 @@ export class MovieController {
     description: 'ID from The Movie Database',
     required: true,
   })
-  create(@Param('id', ParseIntPipe) id: number): Promise<Movie> {
+  @ApiCreatedResponse({ type: MovieEntity })
+  create(@Param('id', ParseIntPipe) id: number): Promise<MovieEntity> {
     return this.movieService.create(id);
   }
 
@@ -73,10 +85,11 @@ export class MovieController {
     description: 'ID from The Movie Database',
     required: true,
   })
+  @ApiCreatedResponse({ type: MovieEntity })
   attachGenre(
     @Param('id', ParseIntPipe) movieId: number,
     @Body() ids: number[],
-  ): Promise<Movie> {
+  ): Promise<MovieEntity> {
     return this.movieService.attachGenre(movieId, ids);
   }
 
@@ -91,10 +104,11 @@ export class MovieController {
     description: 'ID from The Movie Database',
     required: true,
   })
+  @ApiOkResponse({ type: MovieEntity })
   detachGenre(
     @Param('id', ParseIntPipe) movieId: number,
     @Body() ids: number[],
-  ): Promise<Movie> {
+  ): Promise<MovieEntity> {
     return this.movieService.detachGenre(movieId, ids);
   }
 
@@ -109,7 +123,10 @@ export class MovieController {
     description: "Movie's ID",
     required: true,
   })
-  updateImageTmdb(@Param('id', ParseIntPipe) movieId: number): Promise<Movie> {
+  @ApiCreatedResponse({ type: MovieEntity })
+  updateImageTmdb(
+    @Param('id', ParseIntPipe) movieId: number,
+  ): Promise<MovieEntity> {
     return this.movieService.updateImageFromTmdb(movieId);
   }
 
@@ -125,10 +142,11 @@ export class MovieController {
     description: "Movie's ID",
     required: true,
   })
+  @ApiCreatedResponse({ type: MovieEntity })
   updateImage(
     @Param('id', ParseIntPipe) movieId: number,
     @UploadedFile() file: Express.Multer.File,
-  ): Promise<Movie> {
+  ): Promise<MovieEntity> {
     return this.movieService.updateImageFromFile(movieId, file);
   }
 
@@ -141,7 +159,8 @@ export class MovieController {
     description: 'The search pattern',
     required: true,
   })
-  search(@Param() params: SearchDto): Promise<PaginatedResult<Movie>> {
+  @ApiOkResponse({ type: PaginatedResult<MovieEntity> })
+  search(@Param() params: SearchDto): Promise<PaginatedResult<MovieEntity>> {
     return this.movieService.search(params.query);
   }
 
@@ -154,7 +173,8 @@ export class MovieController {
     description: "Movie's ID",
     required: true,
   })
-  findOne(@Param('id', ParseIntPipe) id: number): Promise<Movie> {
+  @ApiOkResponse({ type: MovieEntity })
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<MovieEntity> {
     return this.movieService.findOne(id);
   }
 
@@ -169,10 +189,11 @@ export class MovieController {
     description: "Movie's ID",
     required: true,
   })
+  @ApiCreatedResponse({ type: MovieEntity })
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() dto: MovieDto,
-  ): Promise<Movie> {
+    @Body() dto: UpdateMovieDto,
+  ): Promise<MovieEntity> {
     return this.movieService.update(id, dto);
   }
 
@@ -187,7 +208,8 @@ export class MovieController {
     description: "Movie's ID",
     required: true,
   })
-  delete(@Param('id', ParseIntPipe) id: number): Promise<Movie> {
+  @ApiOkResponse({ type: MovieEntity })
+  delete(@Param('id', ParseIntPipe) id: number): Promise<MovieEntity> {
     return this.movieService.delete(id);
   }
 }

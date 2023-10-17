@@ -1,14 +1,61 @@
-export interface PaginatedResult<T> {
-  data: T[];
-  meta: {
-    total: number;
-    lastPage: number;
-    currentPage: number;
-    perPage: number;
-    prev: number | null;
-    next: number | null;
-  };
+import {
+  ApiExtraModels,
+  ApiOkResponse,
+  ApiProperty,
+  getSchemaPath,
+} from '@nestjs/swagger';
+import { applyDecorators } from '@nestjs/common';
+
+export class PaginatedResultMeta {
+  @ApiProperty()
+  total: number;
+
+  @ApiProperty()
+  lastPage: number;
+
+  @ApiProperty()
+  currentPage: number;
+
+  @ApiProperty()
+  perPage: number;
+
+  @ApiProperty()
+  prev: number | null;
+
+  @ApiProperty()
+  next: number | null;
 }
+
+export class PaginatedResult<T> {
+  @ApiProperty({ type: 'object', isArray: true })
+  data: T[];
+
+  @ApiProperty()
+  meta: PaginatedResultMeta;
+}
+
+export const ApiOkResponsePaginated = <DataDto extends Function>(
+  dataDto: DataDto,
+) => {
+  return applyDecorators(
+    ApiExtraModels(PaginatedResult, dataDto),
+    ApiOkResponse({
+      schema: {
+        allOf: [
+          { $ref: getSchemaPath(PaginatedResult) },
+          {
+            properties: {
+              data: {
+                type: 'array',
+                items: { $ref: getSchemaPath(dataDto) },
+              },
+            },
+          },
+        ],
+      },
+    }),
+  );
+};
 
 export type PaginateOptions = {
   page?: number | string;

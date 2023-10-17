@@ -10,6 +10,7 @@ import {
 import { Cinema } from '@prisma/client';
 import { CinemaDetailsDto } from './dto/cinema-details.dto';
 import { ScreeningService } from '../screening/screening.service';
+import { CinemaEntity } from './entities/cinema.entity';
 
 @Injectable()
 export class CinemaService {
@@ -28,13 +29,15 @@ export class CinemaService {
     >;
   }
 
-  async create(createCinemaDto: CreateCinemaDto): Promise<Cinema> {
+  async create(createCinemaDto: CreateCinemaDto): Promise<CinemaEntity> {
     return this.prismaService.cinema.create({
       data: createCinemaDto,
     });
   }
 
-  async findAll(pageable?: PaginateOptions): Promise<PaginatedResult<Cinema>> {
+  async findAll(
+    pageable?: PaginateOptions,
+  ): Promise<PaginatedResult<CinemaEntity>> {
     return this.cinemaPaginator(this.prismaService.cinema, undefined, pageable);
   }
 
@@ -83,13 +86,16 @@ export class CinemaService {
     });
   }
 
-  async findOne(id: number): Promise<Cinema> {
+  async findOne(id: number): Promise<CinemaEntity> {
     return this.prismaService.cinema.findUnique({
       where: { id },
     });
   }
 
-  async update(id: number, updateCinemaDto: UpdateCinemaDto): Promise<Cinema> {
+  async update(
+    id: number,
+    updateCinemaDto: UpdateCinemaDto,
+  ): Promise<CinemaEntity> {
     return this.prismaService.cinema.update({
       where: { id },
       data: {
@@ -99,13 +105,13 @@ export class CinemaService {
     });
   }
 
-  async remove(id: number): Promise<Cinema> {
+  async remove(id: number): Promise<CinemaEntity> {
     return this.prismaService.cinema.delete({
       where: { id },
     });
   }
 
-  async search(query: string): Promise<PaginatedResult<Cinema>> {
+  async search(query: string): Promise<PaginatedResult<CinemaEntity>> {
     return this.cinemaPaginator(this.prismaService.cinema, {
       where: {
         OR: [

@@ -13,13 +13,20 @@ import {
 import { CinemaService } from './cinema.service';
 import { CreateCinemaDto } from './dto/create-cinema.dto';
 import { UpdateCinemaDto } from './dto/update-cinema.dto';
-import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
-import { PaginatedResult, PaginateOptions } from '../prisma/paginator';
+import {
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
+import { ApiOkResponsePaginated, PaginatedResult, PaginateOptions } from '../prisma/paginator';
 import { Cinema, Role } from '@prisma/client';
 import { Roles } from '../decorators/roles.decorator';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { CinemaDetailsDto } from './dto/cinema-details.dto';
 import { SearchDto } from '../dto/search.dto';
+import { CinemaEntity } from './entities/cinema.entity';
 
 @Controller('cinema')
 @ApiTags('cinema')
@@ -32,7 +39,8 @@ export class CinemaController {
   @ApiOperation({
     summary: 'Create a new cinema',
   })
-  create(@Body() createCinemaDto: CreateCinemaDto): Promise<Cinema> {
+  @ApiCreatedResponse({ type: CinemaEntity })
+  create(@Body() createCinemaDto: CreateCinemaDto): Promise<CinemaEntity> {
     return this.cinemaService.create(createCinemaDto);
   }
 
@@ -40,6 +48,7 @@ export class CinemaController {
   @ApiOperation({
     summary: 'Retrieve all cinemas with pagination results',
   })
+  @ApiOkResponse({ type: PaginatedResult<CinemaEntity> })
   findAll(
     @Query() pageable: PaginateOptions,
   ): Promise<PaginatedResult<Cinema>> {
@@ -55,7 +64,8 @@ export class CinemaController {
     description: 'The search pattern',
     required: true,
   })
-  search(@Param() params: SearchDto): Promise<PaginatedResult<Cinema>> {
+  @ApiOkResponsePaginated(CinemaEntity)
+  search(@Param() params: SearchDto): Promise<PaginatedResult<CinemaEntity>> {
     return this.cinemaService.search(params.query);
   }
 
@@ -68,6 +78,7 @@ export class CinemaController {
     description: "Cinema's ID",
     required: true,
   })
+  @ApiOkResponse({ type: CinemaDetailsDto })
   findOneDetails(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<CinemaDetailsDto> {
@@ -83,7 +94,8 @@ export class CinemaController {
     description: "Cinema's ID",
     required: true,
   })
-  findOne(@Param('id', ParseIntPipe) id: number): Promise<Cinema> {
+  @ApiOkResponse({ type: CinemaEntity })
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<CinemaEntity> {
     return this.cinemaService.findOne(id);
   }
 
@@ -98,10 +110,11 @@ export class CinemaController {
     description: "Cinema's ID",
     required: true,
   })
+  @ApiCreatedResponse({ type: CinemaEntity })
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateCinemaDto: UpdateCinemaDto,
-  ): Promise<Cinema> {
+  ): Promise<CinemaEntity> {
     return this.cinemaService.update(id, updateCinemaDto);
   }
 
@@ -116,7 +129,8 @@ export class CinemaController {
     description: "Cinema's ID",
     required: true,
   })
-  remove(@Param('id', ParseIntPipe) id: number): Promise<Cinema> {
+  @ApiOkResponse({ type: CinemaEntity })
+  remove(@Param('id', ParseIntPipe) id: number): Promise<CinemaEntity> {
     return this.cinemaService.remove(id);
   }
 }

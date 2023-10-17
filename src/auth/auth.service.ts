@@ -3,10 +3,11 @@ import { PrismaService } from '../prisma/prisma.service';
 import { User } from '@prisma/client';
 
 import * as bcrypt from 'bcrypt';
-import { SignUpDto } from './models/sign-up.dto';
+import { SignUpDto } from './dto/sign-up.dto';
 import { JwtService } from '@nestjs/jwt';
-import { TokenResponse } from './models/token-response.model';
+import { TokenResponseDto } from './dto/token-response.dto';
 import { ApiConfigService } from '../api-config/api-config.service';
+import { UserEntity } from './entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -34,20 +35,22 @@ export class AuthService {
     });
   }
 
-  async signUp(signUp: SignUpDto): Promise<User> {
+  async signUp(signUp: SignUpDto): Promise<UserEntity> {
     if (signUp.password !== signUp.confirmPassword) {
       throw new ConflictException(
         'Confirm does not correspond to the original password',
       );
     }
 
-    return this.prismaService.user.create({
-      data: {
-        email: signUp.email.toLowerCase(),
-        password: await bcrypt.hash(signUp.password, 10),
-        createdAt: new Date(),
-      },
-    });
+    return new UserEntity(
+      await this.prismaService.user.create({
+        data: {
+          email: signUp.email.toLowerCase(),
+          password: await bcrypt.hash(signUp.password, 10),
+          createdAt: new Date(),
+        },
+      }),
+    );
   }
 
   async validateUser(
@@ -79,7 +82,7 @@ export class AuthService {
     return null;
   }
 
-  async login(user: User): Promise<TokenResponse> {
+  async login(user: User): Promise<TokenResponseDto> {
     const [accessToken, refreshTokenOriginal] = await Promise.all([
       this.jwtService.signAsync(this.getUserPayloadToken(user)),
       this.jwtService.signAsync(this.getUserPayloadToken(user), {
@@ -96,12 +99,10 @@ export class AuthService {
       },
     });
 
-    const { password, refreshToken, ...userInfo } = user;
-
     return {
       access_token: accessToken,
       refresh_token: refreshTokenOriginal,
-      user: userInfo,
+      user: new UserEntity(user),
     };
   }
 

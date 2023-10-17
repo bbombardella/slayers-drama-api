@@ -9,6 +9,7 @@ import {
 import { Screening } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { GroupedScreeningDto } from './dto/grouped-screening.dto';
+import { ScreeningEntity } from './entities/screening.entity';
 
 @Injectable()
 export class ScreeningService {
@@ -24,7 +25,9 @@ export class ScreeningService {
     >;
   }
 
-  async create(createScreeningDto: CreateScreeningDto): Promise<Screening> {
+  async create(
+    createScreeningDto: CreateScreeningDto,
+  ): Promise<ScreeningEntity> {
     return this.prismaService.screening.create({
       data: createScreeningDto,
     });
@@ -32,7 +35,7 @@ export class ScreeningService {
 
   async findAll(
     pageable?: PaginateOptions,
-  ): Promise<PaginatedResult<Screening>> {
+  ): Promise<PaginatedResult<ScreeningEntity>> {
     return this.screeningPaginator(
       this.prismaService.screening,
       undefined,
@@ -40,7 +43,7 @@ export class ScreeningService {
     );
   }
 
-  async findOne(id: number): Promise<Screening> {
+  async findOne(id: number): Promise<ScreeningEntity> {
     return this.prismaService.screening.findUnique({
       where: { id },
     });
@@ -49,7 +52,7 @@ export class ScreeningService {
   async update(
     id: number,
     updateScreeningDto: UpdateScreeningDto,
-  ): Promise<Screening> {
+  ): Promise<ScreeningEntity> {
     return this.prismaService.screening.update({
       where: { id },
       data: {
@@ -59,13 +62,13 @@ export class ScreeningService {
     });
   }
 
-  async remove(id: number): Promise<Screening> {
+  async remove(id: number): Promise<ScreeningEntity> {
     return this.prismaService.screening.delete({
       where: { id },
     });
   }
 
-  groupScreeningByDate(screenings: Screening[]): GroupedScreeningDto {
+  groupScreeningByDate(screenings: ScreeningEntity[]): GroupedScreeningDto {
     return screenings.reduce((grouped, item) => {
       // Vérifie si le groupe existe déjà
       const startDate = new Date(item.start);

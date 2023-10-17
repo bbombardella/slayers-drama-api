@@ -5,39 +5,96 @@ import {
   ProductionCountry,
   SpokenLanguage,
 } from './';
+import { ApiProperty } from '@nestjs/swagger';
 
-export interface BelongsToCollection {
+export class BelongsToCollection {
+  @ApiProperty()
   id: number;
+
+  @ApiProperty()
   name: string;
+
+  @ApiProperty()
   poster_path: string;
+
+  @ApiProperty()
   backdrop_path: string;
 }
 
-export interface MovieDetails {
+export class MovieDetails {
+  @ApiProperty()
   adult: boolean;
+
+  @ApiProperty()
   backdrop_path: string;
+
+  @ApiProperty()
   belongs_to_collection?: BelongsToCollection;
+
+  @ApiProperty()
   budget: number;
+
+  @ApiProperty({ type: Genre, isArray: true })
   genres: Genre[];
+
+  @ApiProperty()
   homepage: string;
+
+  @ApiProperty()
   id: number;
+
+  @ApiProperty()
   imdb_id: string;
+
+  @ApiProperty()
   original_language: string;
+
+  @ApiProperty()
   original_title: string;
+
+  @ApiProperty()
   overview: string;
+
+  @ApiProperty()
   popularity: number;
+
+  @ApiProperty()
   poster_path?: string;
+
+  @ApiProperty({ type: ProductionCompany, isArray: true })
   production_companies: ProductionCompany[];
+
+  @ApiProperty({ type: ProductionCountry, isArray: true })
   production_countries: ProductionCountry[];
+
+  @ApiProperty()
   release_date: string;
+
+  @ApiProperty()
   revenue: number;
+
+  @ApiProperty()
   runtime: number;
+
+  @ApiProperty()
   spoken_languages: SpokenLanguage[];
+
+  @ApiProperty()
   status: string;
+
+  @ApiProperty()
   tagline: string;
+
+  @ApiProperty()
   title: string;
+
+  @ApiProperty()
   video: boolean;
+
+  @ApiProperty()
   vote_average: number;
+
+  @ApiProperty()
   vote_count: number;
 }
 
