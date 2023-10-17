@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ApiConfigService } from '../api-config/api-config.service';
 import { HttpService } from '@nestjs/axios';
 import { Observable } from 'rxjs';
-import { Movie } from './models';
+import { MovieDetails } from './models';
 import { AxiosResponse } from 'axios';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class TmdbApiService {
     private readonly httpService: HttpService,
   ) {}
 
-  get defaultQueryString(): any {
+  get defaultQueryString(): { api_key: string; language: string } {
     return {
       api_key: this.apiConfigService.tmdb.apiKey,
       language: 'fr-FR',
@@ -23,8 +23,8 @@ export class TmdbApiService {
     return this.apiConfigService.tmdb.url;
   }
 
-  getMovie(id: string): Observable<AxiosResponse<Movie>> {
-    return this.httpService.get<Movie>(`${this.root}movie/${id}`, {
+  getMovie(id: number): Observable<AxiosResponse<MovieDetails>> {
+    return this.httpService.get<MovieDetails>(`${this.root}movie/${id}`, {
       params: this.defaultQueryString,
     });
   }

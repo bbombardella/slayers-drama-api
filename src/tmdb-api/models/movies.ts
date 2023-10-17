@@ -1,6 +1,6 @@
 import {
   Genre,
-  Movie,
+  MovieTmdb,
   ProductionCompany,
   ProductionCountry,
   SpokenLanguage,
@@ -70,7 +70,7 @@ export interface ReleaseDates {
 
 export interface SimilarMovies {
   page: number;
-  results: Movie[];
+  results: MovieTmdb[];
   total_pages: number;
   total_results: number;
 }
@@ -129,7 +129,7 @@ export interface Dates {
 
 export interface MoviesPlayingNow {
   page: number;
-  results: Movie[];
+  results: MovieTmdb[];
   dates: Dates;
   total_pages: number;
   total_results: number;
@@ -137,21 +137,21 @@ export interface MoviesPlayingNow {
 
 export interface PopularMovies {
   page: number;
-  results: Movie[];
+  results: MovieTmdb[];
   total_results: number;
   total_pages: number;
 }
 
 export interface TopRatedMovies {
   page: number;
-  results: Movie[];
+  results: MovieTmdb[];
   total_results: number;
   total_pages: number;
 }
 
 export interface UpcomingMovies {
   page: number;
-  results: Movie[];
+  results: MovieTmdb[];
   total_results: number;
   total_pages: number;
 }
