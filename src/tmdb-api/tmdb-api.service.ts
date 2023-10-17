@@ -23,6 +23,10 @@ export class TmdbApiService {
     return this.apiConfigService.tmdb.url;
   }
 
+  getImageUrl(path: string): string {
+    return `${this.apiConfigService.tmdb.urlImageBase}${path}`;
+  }
+
   getMovie(id: number): Observable<AxiosResponse<MovieDetails>> {
     return this.httpService.get<MovieDetails>(`${this.root}movie/${id}`, {
       params: this.defaultQueryString,

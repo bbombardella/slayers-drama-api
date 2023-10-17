@@ -8,6 +8,8 @@ import { GenreModule } from './genre/genre.module';
 import { TmdbApiModule } from './tmdb-api/tmdb-api.module';
 import { CinemaModule } from './cinema/cinema.module';
 import { ScreeningModule } from './screening/screening.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { ImageModule } from './image/image.module';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { ScreeningModule } from './screening/screening.module';
     TmdbApiModule,
     CinemaModule,
     ScreeningModule,
+    CloudinaryModule,
+    ImageModule,
   ],
   controllers: [],
   providers: [AppService],

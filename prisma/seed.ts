@@ -44,7 +44,7 @@ async function main() {
   const batchGenrePayload = await prisma.genre.createMany({
     data: genres.map((g) => ({
       title: g.name,
-      tmdb_id: g.id,
+      tmdbId: g.id,
     })),
     skipDuplicates: true,
   });

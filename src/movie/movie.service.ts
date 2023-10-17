@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MovieDto } from './models/movie.dto';
 import { TmdbApiService } from '../tmdb-api/tmdb-api.service';
@@ -10,12 +14,16 @@ import {
   PaginateOptions,
   paginator,
 } from '../prisma/paginator';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { ImageService } from '../image/image.service';
 
 @Injectable()
 export class MovieService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly tmdbApiService: TmdbApiService,
+    private readonly cloudinaryService: CloudinaryService,
+    private readonly imageService: ImageService,
   ) {}
 
   private get moviePaginator(): typeof paginator<
@@ -56,30 +64,38 @@ export class MovieService {
 
   async create(id: number): Promise<Movie> {
     const movieTmdb = await this.findOneTmdb(id);
+    const image = await this.cloudinaryService.uploadFromRemote(
+      this.tmdbApiService.getImageUrl(movieTmdb.poster_path),
+    );
 
     return this.prismaService.movie.create({
       data: {
         title: movieTmdb.title,
-        release_date: new Date(movieTmdb.release_date),
+        releaseDate: new Date(movieTmdb.release_date),
         overview: movieTmdb.overview,
         popularity: movieTmdb.popularity,
-        vote_average: movieTmdb.vote_average,
+        voteAverage: movieTmdb.vote_average,
         budget: movieTmdb.budget,
-        poster_path: movieTmdb.poster_path,
         tagline: movieTmdb.tagline,
-        tmdb_id: movieTmdb.id,
+        tmdbId: movieTmdb.id,
         updatedAt: new Date(),
         genres: {
           connectOrCreate: movieTmdb.genres.map((g) => ({
             where: {
-              tmdb_id: g.id,
+              tmdbId: g.id,
             },
             create: {
               title: g.name,
-              tmdb_id: g.id,
+              tmdbId: g.id,
               updatedAt: new Date(),
             },
           })),
+        },
+        poster: {
+          create: {
+            url: image.url,
+            cloudinaryPublicId: image.public_id,
+          },
         },
       },
     });
@@ -150,5 +166,40 @@ export class MovieService {
       },
       include: { genres: true },
     });
+  }
+
+  async updateImageFromFile(
+    id: number,
+    file: Express.Multer.File,
+  ): Promise<Movie> {
+    const movie = await this.findOne(id);
+    const image = await this.cloudinaryService.uploadFile(file);
+
+    await this.imageService.update(movie.posterImageId, {
+      url: image.url,
+      publicId: image.public_id,
+    });
+
+    return this.findOne(id);
+  }
+
+  async updateImageFromTmdb(id: number): Promise<Movie> {
+    const movie = await this.findOne(id);
+    const movieTmdb = await this.findOneTmdb(movie.tmdbId);
+
+    if (movieTmdb.poster_path) {
+      const image = await this.cloudinaryService.uploadFromRemote(
+        this.tmdbApiService.getImageUrl(movieTmdb.poster_path),
+      );
+
+      await this.imageService.update(movie.posterImageId, {
+        url: image.url,
+        publicId: image.secure_url,
+      });
+
+      return this.findOne(id);
+    }
+
+    throw new BadRequestException();
   }
 }

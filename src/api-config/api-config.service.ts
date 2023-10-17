@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ConfigDatabase, ConfigProviders, ConfigTMDB } from "./model";
+import {
+  ConfigCloudinary,
+  ConfigDatabase,
+  ConfigProviders,
+  ConfigTMDB,
+} from './model';
 
 @Injectable()
 export class ApiConfigService {
@@ -16,5 +21,9 @@ export class ApiConfigService {
 
   get tmdb(): ConfigTMDB {
     return this.configService.get<ConfigTMDB>('tmdb');
+  }
+
+  get cloudinary(): ConfigCloudinary {
+    return this.configService.get<ConfigCloudinary>('cloudinary');
   }
 }
