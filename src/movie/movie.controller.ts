@@ -164,6 +164,20 @@ export class MovieController {
     return this.movieService.search(params.query);
   }
 
+  @Get('popular/:count')
+  @ApiOperation({
+    summary: 'get most popular movies',
+  })
+  @ApiParam({
+    name: 'count',
+    description: 'number of movies u want',
+    required: true,
+  })
+  @ApiOkResponse({ type: Array<MovieEntity> })
+  getMostPopular(@Param() queryParam: {count: number}): Promise<MovieEntity[]> {
+    return this.movieService.findMostPopular(queryParam.count);
+  }
+
   @Get(':id')
   @ApiOperation({
     summary: 'Retrieve a movie by its id',

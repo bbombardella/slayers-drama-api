@@ -10,6 +10,7 @@ import { CinemaModule } from './cinema/cinema.module';
 import { ScreeningModule } from './screening/screening.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { ImageModule } from './image/image.module';
+import { DebugModule } from './debug/debug.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ImageModule } from './image/image.module';
     ScreeningModule,
     CloudinaryModule,
     ImageModule,
+    DebugModule,
   ],
   controllers: [],
   providers: [AppService],

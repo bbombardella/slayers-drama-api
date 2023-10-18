@@ -2,6 +2,7 @@ import { Movie } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
+import { ImageEntity } from 'src/image/entities/image.entity';
 
 export class MovieEntity implements Movie {
   @ApiProperty()
@@ -46,7 +47,13 @@ export class MovieEntity implements Movie {
   @ApiProperty()
   posterImageId: number;
 
-  constructor(partial: Partial<Movie>) {
-    Object.assign(this, partial);
+  @ApiProperty()
+  poster?: ImageEntity;
+
+  constructor({poster, ...data}: Partial<MovieEntity>) {
+    if (poster) {
+      this.poster = new ImageEntity(poster);
+    }
+    Object.assign(this, data);
   }
 }
