@@ -91,5 +91,5 @@ model Image {
   cloudinaryPublicId String   @unique
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
-  Movie              Movie[]
+  movies             Movie[]
 }
