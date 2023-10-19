@@ -48,7 +48,7 @@ export class CinemaController {
   @ApiOperation({
     summary: 'Retrieve all cinemas with pagination results',
   })
-  @ApiOkResponse({ type: PaginatedResult<CinemaEntity> })
+  @ApiOkResponsePaginated(CinemaEntity)
   findAll(
     @Query() pageable: PaginateOptions,
   ): Promise<PaginatedResult<Cinema>> {

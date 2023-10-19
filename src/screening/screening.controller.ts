@@ -21,7 +21,7 @@ import {
 import { Roles } from '../decorators/roles.decorator';
 import { Role, Screening } from '@prisma/client';
 import { JwtGuard } from '../auth/guards/jwt.guard';
-import { PaginatedResult } from '../prisma/paginator';
+import { ApiOkResponsePaginated, PaginatedResult } from '../prisma/paginator';
 import { ScreeningEntity } from './entities/screening.entity';
 
 @Controller('screening')
@@ -46,7 +46,7 @@ export class ScreeningController {
   @ApiOperation({
     summary: 'Retrieve all screenings with pagination results',
   })
-  @ApiOkResponse({ type: PaginatedResult<ScreeningEntity> })
+  @ApiOkResponsePaginated(ScreeningEntity)
   findAll(): Promise<PaginatedResult<ScreeningEntity>> {
     return this.screeningService.findAll();
   }

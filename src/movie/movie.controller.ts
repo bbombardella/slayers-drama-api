@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { MovieService } from './movie.service';
 import { Movie, Role } from '@prisma/client';
-import { PaginatedResult, PaginateOptions } from '../prisma/paginator';
+import { ApiOkResponsePaginated, PaginatedResult, PaginateOptions } from '../prisma/paginator';
 import { MovieDetails } from '../tmdb-api/models';
 import {
   ApiCreatedResponse,
@@ -40,7 +40,7 @@ export class MovieController {
   @ApiOperation({
     summary: 'Retrieve all movies with pagination results',
   })
-  @ApiOkResponse({ type: PaginatedResult<Movie> })
+  @ApiOkResponsePaginated(MovieEntity)
   findAll(@Query() pageable: PaginateOptions): Promise<PaginatedResult<Movie>> {
     return this.movieService.findAll(pageable);
   }
@@ -160,7 +160,7 @@ export class MovieController {
     description: 'The search pattern',
     required: true,
   })
-  @ApiOkResponse({ type: PaginatedResult<MovieEntity> })
+  @ApiOkResponsePaginated(MovieEntity)
   search(@Param() params: SearchDto): Promise<PaginatedResult<MovieEntity>> {
     return this.movieService.search(params.query);
   }
