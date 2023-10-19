@@ -16,4 +16,9 @@ export class GenreEntity implements Genre {
 
   @ApiProperty()
   updatedAt: Date;
+
+  constructor(data: Partial<GenreEntity>) {
+    Object.assign(this, data);
+  }
+  
 }
