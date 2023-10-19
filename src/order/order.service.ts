@@ -17,6 +17,8 @@ import {
 import { Order } from '@prisma/client';
 import { OrderPaymentRequiredDto } from './dto/order-payment-required.dto';
 import { $Enums } from '.prisma/client';
+import { MailService } from '../mail/mail.service';
+import { MailSend } from '../mail/models/mail-send.model';
 
 @Injectable()
 export class OrderService {
@@ -24,6 +26,7 @@ export class OrderService {
     private readonly prismaService: PrismaService,
     private readonly stripeService: StripeService,
     private readonly reservationService: ReservationService,
+    private readonly mailService: MailService,
   ) {}
 
   private get orderPaginator(): typeof paginator<
@@ -177,12 +180,50 @@ export class OrderService {
       status = 'CANCELLED';
     }
 
-    return new OrderEntity(
+    const finalOrder = new OrderEntity(
       await this.prismaService.order.update({
         where: { id: order.id },
         data: { status },
+        include: {
+          customer: true,
+        },
       }),
     );
+
+    await this.handleMailOrder(finalOrder);
+
+    return finalOrder;
+  }
+
+  private async handleMailOrder(order: OrderEntity) {
+    let config: MailSend;
+
+    switch (order.status) {
+      case 'PAYING':
+        return;
+      case 'CANCELLED':
+        config = {
+          to: order.customer.email,
+          subject: `Annulation de votre commande n°${order.id}`,
+          html: `<h1>A propos de votre commande n°${order.id}</h1>
+                <p>Votre commande a été annulé, le montant de votre commande n'a pas été débité.</p>`,
+        };
+        break;
+      case 'PAYED':
+        config = {
+          to: order.customer.email,
+          subject: `Votre commande n°${order.id}`,
+          html: `<h1>A propos de votre commande n°${order.id}</h1>
+                <p>Félicitations ! Votre commande a été validé avec succès.</p>`,
+        };
+        break;
+    }
+
+    if (!config) {
+      return;
+    }
+
+    return this.mailService.sendMail(config).catch(null);
   }
 
   private checkSeats(order: CreateOrderDto | OrderEntity): Promise<boolean> {

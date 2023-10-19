@@ -29,4 +29,9 @@ export default (): Config => ({
   stripe: {
     apiKey: process.env.STRIPE_API_KEY,
   },
+  mailgun: {
+    name: process.env.MAILGUN_NAME,
+    apiKey: process.env.MAILGUN_API_KEY,
+    domain: process.env.MAILGUN_DOMAIN,
+  },
 });

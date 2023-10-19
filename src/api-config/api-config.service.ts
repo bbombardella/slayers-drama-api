@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import {
   ConfigCloudinary,
   ConfigDatabase,
+  ConfigMailgun,
   ConfigProviders,
   ConfigStripe,
   ConfigTMDB,
@@ -30,5 +31,9 @@ export class ApiConfigService {
 
   get stripe(): ConfigStripe {
     return this.configService.get<ConfigStripe>('stripe');
+  }
+
+  get mailgun(): ConfigMailgun {
+    return this.configService.get<ConfigMailgun>('mailgun');
   }
 }
