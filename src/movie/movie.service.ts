@@ -49,6 +49,7 @@ export class MovieService {
         where: { id },
         include: {
           genres: true,
+          poster: true,
         },
       }),
     );
