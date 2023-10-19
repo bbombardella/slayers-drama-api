@@ -231,8 +231,6 @@ export class MovieService {
   }
 
   findMostPopular(count: number): Promise<MovieEntity[]> {
-    console.log('findMostPopular', count);
-
     return this.prismaService.movie.findMany(
       {
         take: Number(count),
