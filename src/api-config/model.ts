@@ -72,12 +72,23 @@ export class ConfigStripe {
   }
 }
 
+export class ConfigMailgun {
+  name: string;
+  apiKey: string;
+
+  constructor(name: string, apiKey: string) {
+    this.name = name;
+    this.apiKey = apiKey;
+  }
+}
+
 export class Config {
   database: ConfigDatabase;
   providers: ConfigProviders;
   tmdb: ConfigTMDB;
   cloudinary: ConfigCloudinary;
   stripe: ConfigStripe;
+  mailgun: ConfigMailgun;
 
   constructor(
     database: ConfigDatabase,
@@ -85,11 +96,13 @@ export class Config {
     tmdb: ConfigTMDB,
     cloudinary: ConfigCloudinary,
     stripe: ConfigStripe,
+    mailgun: ConfigMailgun,
   ) {
     this.database = database;
     this.providers = providers;
     this.tmdb = tmdb;
     this.cloudinary = cloudinary;
     this.stripe = stripe;
+    this.mailgun = mailgun;
   }
 }
