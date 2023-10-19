@@ -38,7 +38,11 @@ export class MovieService {
   }
 
   async findAll(pageable?: PaginateOptions): Promise<PaginatedResult<Movie>> {
-    return this.moviePaginator(this.prismaService.movie, undefined, pageable);
+    return this.moviePaginator(this.prismaService.movie, {
+      include: {
+        poster: true,
+      }
+    }, pageable);
   }
 
   async findOne(id: number): Promise<MovieEntity> {
