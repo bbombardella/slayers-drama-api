@@ -29,6 +29,7 @@ import { SearchDto } from '../dto/search.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MovieEntity } from './entities/movie.entity';
 import { UpdateMovieDto } from './dto/update-movie.dto';
+import { CountPopularParamsDto } from './dto/count-popular-params.dto';
 
 @Controller('movie')
 @ApiTags('movie')
@@ -166,15 +167,17 @@ export class MovieController {
 
   @Get('popular/:count')
   @ApiOperation({
-    summary: 'get most popular movies',
+    summary: 'Find most popular movies',
   })
   @ApiParam({
     name: 'count',
-    description: 'number of movies u want',
+    description: 'Number of movies wanted',
     required: true,
   })
-  @ApiOkResponse({ type: Array<MovieEntity> })
-  getMostPopular(@Param() queryParam: {count: number}): Promise<MovieEntity[]> {
+  @ApiOkResponse({ type: MovieEntity, isArray: true })
+  getMostPopular(
+    @Param() queryParam: CountPopularParamsDto,
+  ): Promise<MovieEntity[]> {
     return this.movieService.findMostPopular(queryParam.count);
   }
 

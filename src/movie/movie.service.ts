@@ -17,17 +17,15 @@ import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { ImageService } from '../image/image.service';
 import { MovieEntity } from './entities/movie.entity';
 import { UpdateMovieDto } from './dto/update-movie.dto';
-import { raw } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class MovieService {
-
   constructor(
     private readonly prismaService: PrismaService,
     private readonly tmdbApiService: TmdbApiService,
     private readonly cloudinaryService: CloudinaryService,
     private readonly imageService: ImageService,
-  ) { }
+  ) {}
 
   private get moviePaginator(): typeof paginator<
     Movie,
@@ -231,15 +229,14 @@ export class MovieService {
   }
 
   findMostPopular(count: number): Promise<MovieEntity[]> {
-    return this.prismaService.movie.findMany(
-      {
-        take: Number(count),
-        orderBy: {
-          popularity: 'desc',
-        }, include: {
-          poster: true,
-        }
-      }
-    );
+    return this.prismaService.movie.findMany({
+      take: count,
+      orderBy: {
+        popularity: 'desc',
+      },
+      include: {
+        poster: true,
+      },
+    });
   }
 }

@@ -58,9 +58,11 @@ export class MovieEntity implements Movie {
     if (poster) {
       this.poster = new ImageEntity(poster);
     }
+
     if (genres) {
       this.genres = genres.map((g) => new GenreEntity(g));
-    }    
+    }
+
     Object.assign(this, data);
   }
 }
