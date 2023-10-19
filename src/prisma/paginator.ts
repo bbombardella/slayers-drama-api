@@ -5,6 +5,10 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { applyDecorators } from '@nestjs/common';
+import { type } from 'os';
+import { number } from 'joi';
+import { IsInt, IsOptional, IsPositive } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class PaginatedResultMeta {
   @ApiProperty()
@@ -57,9 +61,19 @@ export const ApiOkResponsePaginated = <DataDto extends Function>(
   );
 };
 
-export type PaginateOptions = {
-  page?: number | string;
-  perPage?: number | string;
+export class PaginateOptions {
+  @ApiProperty({type: number, default: 1})
+  @Type(() => Number)
+  @IsInt()
+  @IsPositive()
+  @IsOptional()
+  page?: number;
+  @ApiProperty({type: number, default: 8})
+  @Type(() => Number)
+  @IsInt()
+  @IsPositive()
+  @IsOptional()
+  perPage?: number;
 };
 export type PaginateFunction = <T, K>(
   model: any,
