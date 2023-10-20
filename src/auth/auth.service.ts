@@ -1,6 +1,5 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { User } from '@prisma/client';
 
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -90,7 +89,7 @@ export class AuthService {
     return null;
   }
 
-  async login(user: User): Promise<TokenResponseDto> {
+  async login(user: UserEntity): Promise<TokenResponseDto> {
     const [accessToken, refreshTokenOriginal] = await Promise.all([
       this.jwtService.signAsync(this.getUserPayloadToken(user)),
       this.jwtService.signAsync(this.getUserPayloadToken(user), {
@@ -114,7 +113,7 @@ export class AuthService {
     };
   }
 
-  async logout(user: User): Promise<void> {
+  async logout(user: UserEntity): Promise<void> {
     await this.prismaService.user.update({
       data: {
         refreshToken: null,
@@ -125,7 +124,10 @@ export class AuthService {
     });
   }
 
-  private getUserPayloadToken(user: User): { id: number; username: string } {
+  private getUserPayloadToken(user: UserEntity): {
+    id: number;
+    username: string;
+  } {
     return { id: user.id, username: user.email };
   }
 }

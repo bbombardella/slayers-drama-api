@@ -7,6 +7,12 @@ export class UserEntity implements User {
   id: number;
 
   @ApiProperty()
+  firstName: string;
+
+  @ApiProperty()
+  lastName: string;
+
+  @ApiProperty()
   email: string;
 
   @Exclude()

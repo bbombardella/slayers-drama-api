@@ -1,6 +1,5 @@
 import { Body, Controller, Delete, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { User } from '@prisma/client';
 import { LocalGuard } from './guards/local.guard';
 import { TokenResponseDto } from './dto/token-response.dto';
 import { CurrentUser } from '../decorators/current-user.decorator';
@@ -40,7 +39,7 @@ export class AuthController {
   })
   @ApiBody({ type: LoginDto })
   @ApiOkResponse({ type: TokenResponseDto })
-  signIn(@CurrentUser() user: User): Promise<TokenResponseDto> {
+  signIn(@CurrentUser() user: UserEntity): Promise<TokenResponseDto> {
     return this.authService.login(user);
   }
 
@@ -50,7 +49,7 @@ export class AuthController {
     summary: 'Disconnect user',
   })
   @ApiOkResponse()
-  logout(@CurrentUser() user: User): Promise<void> {
+  logout(@CurrentUser() user: UserEntity): Promise<void> {
     return this.authService.logout(user);
   }
 
@@ -60,7 +59,7 @@ export class AuthController {
     summary: 'Create new token thanks to refresh token',
   })
   @ApiOkResponse({ type: TokenResponseDto })
-  refresh(@CurrentUser() user: User): Promise<TokenResponseDto> {
+  refresh(@CurrentUser() user: UserEntity): Promise<TokenResponseDto> {
     return this.authService.login(user);
   }
 
@@ -70,7 +69,7 @@ export class AuthController {
     summary: 'Login via Google provider',
   })
   @ApiOkResponse({ type: TokenResponseDto })
-  googleCallback(@CurrentUser() user: User): Promise<TokenResponseDto> {
+  googleCallback(@CurrentUser() user: UserEntity): Promise<TokenResponseDto> {
     return this.authService.login(user);
   }
 
@@ -80,7 +79,9 @@ export class AuthController {
     summary: 'Login via Microsoft provider',
   })
   @ApiOkResponse({ type: TokenResponseDto })
-  microsoftCallback(@CurrentUser() user: User): Promise<TokenResponseDto> {
+  microsoftCallback(
+    @CurrentUser() user: UserEntity,
+  ): Promise<TokenResponseDto> {
     return this.authService.login(user);
   }
 }
