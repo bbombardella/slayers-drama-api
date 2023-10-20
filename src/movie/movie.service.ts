@@ -7,7 +7,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { TmdbApiService } from '../tmdb-api/tmdb-api.service';
 import { lastValueFrom } from 'rxjs';
 import { MovieDetails } from '../tmdb-api/models';
-import { Movie } from '@prisma/client';
+import { Movie, Prisma } from '@prisma/client';
 import {
   PaginatedResult,
   PaginateOptions,
@@ -37,10 +37,14 @@ export class MovieService {
     >;
   }
 
-  async findAll(pageable?: PaginateOptions): Promise<PaginatedResult<Movie>> {
+  async findAll(
+    pageable?: PaginateOptions,
+    onlyPublished: boolean = true,
+  ): Promise<PaginatedResult<Movie>> {
     return this.moviePaginator(
       this.prismaService.movie,
       {
+        where: this.getOnlyPublishedWhereClause(onlyPublished),
         include: {
           poster: true,
         },
@@ -136,9 +140,13 @@ export class MovieService {
     );
   }
 
-  async search(query: string): Promise<PaginatedResult<MovieEntity>> {
+  async search(
+    query: string,
+    onlyPublished: boolean = true,
+  ): Promise<PaginatedResult<MovieEntity>> {
     const result = await this.moviePaginator(this.prismaService.movie, {
       where: {
+        ...this.getOnlyPublishedWhereClause(onlyPublished),
         OR: [
           {
             title: {
@@ -239,5 +247,17 @@ export class MovieService {
         poster: true,
       },
     });
+  }
+
+  private getOnlyPublishedWhereClause(
+    onlyPublished: boolean = true,
+  ): Prisma.MovieWhereInput {
+    if (onlyPublished) {
+      return {
+        published: true,
+      };
+    }
+
+    return {};
   }
 }
