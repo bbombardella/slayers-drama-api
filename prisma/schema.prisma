@@ -48,6 +48,7 @@ model Movie {
   poster        Image       @relation(fields: [posterImageId], references: [id])
   tagline       String
   published     Boolean     @default(false)
+  duration      Int
   tmdbId        Int         @unique
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt

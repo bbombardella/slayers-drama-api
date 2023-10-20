@@ -89,6 +89,7 @@ export class MovieService {
         voteAverage: movieTmdb.vote_average,
         budget: movieTmdb.budget,
         tagline: movieTmdb.tagline,
+        duration: movieTmdb.runtime,
         tmdbId: movieTmdb.id,
         updatedAt: new Date(),
         genres: {
