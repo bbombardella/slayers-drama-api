@@ -2,10 +2,10 @@ import { PassportStrategy } from '@nestjs/passport';
 import { AuthService } from '../auth.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { User } from '@prisma/client';
 
 import { passportJwtSecret } from 'jwks-rsa';
 import { ApiConfigService } from '../../api-config/api-config.service';
+import { UserEntity } from '../entities/user.entity';
 
 @Injectable()
 export class MicrosoftStrategy extends PassportStrategy(Strategy, 'microsoft') {
@@ -25,7 +25,7 @@ export class MicrosoftStrategy extends PassportStrategy(Strategy, 'microsoft') {
     });
   }
 
-  async validate(payload: any): Promise<User> {
+  async validate(payload: any): Promise<UserEntity> {
     if (!payload?.sub) {
       throw new UnauthorizedException();
     }

@@ -3,11 +3,11 @@ import { PrismaService } from '../prisma/prisma.service';
 import { User } from '@prisma/client';
 
 import * as bcrypt from 'bcrypt';
-import { SignUpDto } from './dto/sign-up.dto';
 import { JwtService } from '@nestjs/jwt';
 import { TokenResponseDto } from './dto/token-response.dto';
 import { ApiConfigService } from '../api-config/api-config.service';
 import { UserEntity } from './entities/user.entity';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -17,25 +17,31 @@ export class AuthService {
     private readonly apiConfigService: ApiConfigService,
   ) {}
 
-  async findUserByEmail(email: string): Promise<User | undefined> {
-    return this.prismaService.user.findUnique({
-      where: { email: email.toLowerCase() },
-    });
+  async findUserByEmail(email: string): Promise<UserEntity | undefined> {
+    return new UserEntity(
+      await this.prismaService.user.findUnique({
+        where: { email: email.toLowerCase() },
+      }),
+    );
   }
 
-  async findUserByGoogleId(id: string): Promise<User | undefined> {
-    return this.prismaService.user.findUnique({
-      where: { googleId: id },
-    });
+  async findUserByGoogleId(id: string): Promise<UserEntity | undefined> {
+    return new UserEntity(
+      await this.prismaService.user.findUnique({
+        where: { googleId: id },
+      }),
+    );
   }
 
-  async findUserByMicrosoftId(id: string): Promise<User | undefined> {
-    return this.prismaService.user.findUnique({
-      where: { microsoftId: id },
-    });
+  async findUserByMicrosoftId(id: string): Promise<UserEntity | undefined> {
+    return new UserEntity(
+      await this.prismaService.user.findUnique({
+        where: { microsoftId: id },
+      }),
+    );
   }
 
-  async signUp(signUp: SignUpDto): Promise<UserEntity> {
+  async signUp(signUp: CreateUserDto): Promise<UserEntity> {
     if (signUp.password !== signUp.confirmPassword) {
       throw new ConflictException(
         'Confirm does not correspond to the original password',
@@ -45,6 +51,8 @@ export class AuthService {
     return new UserEntity(
       await this.prismaService.user.create({
         data: {
+          firstName: signUp.firstName,
+          lastName: signUp.lastName,
           email: signUp.email.toLowerCase(),
           password: await bcrypt.hash(signUp.password, 10),
           createdAt: new Date(),
@@ -56,11 +64,11 @@ export class AuthService {
   async validateUser(
     username: string,
     password: string,
-  ): Promise<User | undefined> {
+  ): Promise<UserEntity | undefined> {
     const user = await this.findUserByEmail(username);
 
     if (user && (await bcrypt.compare(password, user.password))) {
-      return user;
+      return new UserEntity(user);
     }
 
     return null;
@@ -69,14 +77,14 @@ export class AuthService {
   async validateRefreshToken(
     username: string,
     token: string,
-  ): Promise<User | undefined> {
+  ): Promise<UserEntity | undefined> {
     const user = await this.findUserByEmail(username);
 
     if (
       user?.refreshToken &&
       (await bcrypt.compare(token, user.refreshToken))
     ) {
-      return user;
+      return new UserEntity(user);
     }
 
     return null;

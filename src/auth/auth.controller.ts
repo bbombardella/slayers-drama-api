@@ -1,7 +1,6 @@
 import { Body, Controller, Delete, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { User } from '@prisma/client';
-import { SignUpDto } from './dto/sign-up.dto';
 import { LocalGuard } from './guards/local.guard';
 import { TokenResponseDto } from './dto/token-response.dto';
 import { CurrentUser } from '../decorators/current-user.decorator';
@@ -18,6 +17,7 @@ import {
 } from '@nestjs/swagger';
 import { UserEntity } from './entities/user.entity';
 import { LoginDto } from './dto/login.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -29,7 +29,7 @@ export class AuthController {
     summary: 'Create an user',
   })
   @ApiCreatedResponse({ type: UserEntity })
-  async signUp(@Body() signUpRequest: SignUpDto): Promise<UserEntity> {
+  async signUp(@Body() signUpRequest: CreateUserDto): Promise<UserEntity> {
     return this.authService.signUp(signUpRequest);
   }
 

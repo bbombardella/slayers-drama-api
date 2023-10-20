@@ -2,7 +2,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '../auth.service';
-import { User } from '@prisma/client';
+import { UserEntity } from '../entities/user.entity';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
@@ -10,8 +10,8 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
     super();
   }
 
-  async validate(username: string, password: string): Promise<User> {
-    const user: User | undefined = await this.authService.validateUser(
+  async validate(username: string, password: string): Promise<UserEntity> {
+    const user: UserEntity | undefined = await this.authService.validateUser(
       username,
       password,
     );
