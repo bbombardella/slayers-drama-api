@@ -76,18 +76,10 @@ export class MovieService {
       this.tmdbApiService.getImageUrl(movieTmdb.poster_path),
     );
 
-    let date: undefined | Date = undefined;
-
-    try {
-      date = new Date(movieTmdb.release_date);
-    } catch (e) {
-      console.log('error', e);
-    }
-
     const newMovie = await this.prismaService.movie.create({
       data: {
         title: movieTmdb.title,
-        releaseDate: date,
+        releaseDate: new Date(movieTmdb.release_date),
         overview: movieTmdb.overview,
         popularity: movieTmdb.popularity,
         voteAverage: movieTmdb.vote_average,
