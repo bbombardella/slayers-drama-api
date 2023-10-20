@@ -1,8 +1,5 @@
-import { Controller, Get, Put, Query } from '@nestjs/common';
-import { log } from 'console';
-import e from 'express';
+import { Controller, Get, Query } from '@nestjs/common';
 import { MovieService } from 'src/movie/movie.service';
-import { MovieDetails } from 'src/tmdb-api/models';
 
 const DELAY_BETWEEN_REQUESTS_MS = 450; // Délai d'une seconde (1000 millisecondes) entre les requêtes
 
