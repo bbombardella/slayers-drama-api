@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsBoolean,
+  IsInt,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -27,7 +28,7 @@ export class CreateProductDto {
 
   @ApiProperty()
   @IsOptional()
-  @IsNumber()
+  @IsInt()
   @IsPositive()
   cinemaId?: number;
 }

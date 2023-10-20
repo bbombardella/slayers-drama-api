@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsPositive, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsPositive, IsString } from 'class-validator';
 
 export class CreateGenreDto {
   @ApiProperty()
@@ -8,7 +8,7 @@ export class CreateGenreDto {
   title: string;
 
   @ApiProperty()
-  @IsNumber()
+  @IsInt()
   @IsPositive()
   tmdbId: number;
 }

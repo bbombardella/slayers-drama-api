@@ -1,16 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ArrayNotEmpty, IsArray, IsNumber, IsPositive } from 'class-validator';
+import { ArrayNotEmpty, IsArray, IsInt, IsPositive } from 'class-validator';
 import { CreateReservationProduct } from './create-reservation-product.dto';
 import { Exclude } from 'class-transformer';
 
 export class CreateReservationDto {
   @ApiProperty()
-  @IsNumber()
+  @IsInt()
   @IsPositive()
   screeningId: number;
 
   @Exclude()
-  @IsNumber()
+  @IsInt()
   @IsPositive()
   customerId: number;
 
