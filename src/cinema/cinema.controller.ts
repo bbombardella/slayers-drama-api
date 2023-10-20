@@ -20,7 +20,11 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { ApiOkResponsePaginated, PaginatedResult, PaginateOptions } from '../prisma/paginator';
+import {
+  ApiOkResponsePaginated,
+  PaginatedResult,
+  PaginateOptions,
+} from '../prisma/paginator';
 import { Cinema, Role } from '@prisma/client';
 import { Roles } from '../decorators/roles.decorator';
 import { JwtGuard } from '../auth/guards/jwt.guard';
@@ -48,7 +52,7 @@ export class CinemaController {
   @ApiOperation({
     summary: 'Retrieve all cinemas with pagination results',
   })
-  @ApiOkResponse({ type: PaginatedResult<CinemaEntity> })
+  @ApiOkResponsePaginated(CinemaEntity)
   findAll(
     @Query() pageable: PaginateOptions,
   ): Promise<PaginatedResult<Cinema>> {

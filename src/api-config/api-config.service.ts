@@ -4,6 +4,7 @@ import {
   ConfigCloudinary,
   ConfigDatabase,
   ConfigProviders,
+  ConfigStripe,
   ConfigTMDB,
 } from './model';
 
@@ -25,5 +26,9 @@ export class ApiConfigService {
 
   get cloudinary(): ConfigCloudinary {
     return this.configService.get<ConfigCloudinary>('cloudinary');
+  }
+
+  get stripe(): ConfigStripe {
+    return this.configService.get<ConfigStripe>('stripe');
   }
 }

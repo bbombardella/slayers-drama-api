@@ -25,6 +25,21 @@ const genres: Genre[] = [
   { id: 37, name: 'Western' },
 ];
 
+const products: Prisma.ProductCreateManyInput[] = [
+  {
+    name: 'Billet plein tarif',
+    price: 11,
+  },
+  {
+    name: 'Billet -26 ans / Etudiant',
+    price: 8,
+  },
+  {
+    name: 'Billet enfant (-12 ans)',
+    price: 6,
+  },
+];
+
 const cinemas: Prisma.CinemaCreateManyInput[] = [
   {
     name: 'Lyon - Centre',
@@ -57,6 +72,13 @@ async function main() {
   });
 
   console.log(`${batchCinemaPayload.count} cinema(s) added`);
+
+  const batchProductPayload = await prisma.product.createMany({
+    data: products,
+    skipDuplicates: true,
+  });
+
+  console.log(`${batchProductPayload.count} price(s) added`);
 }
 
 main()

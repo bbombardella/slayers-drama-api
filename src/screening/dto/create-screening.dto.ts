@@ -1,4 +1,4 @@
-import { IsDate, IsNumber, IsPositive } from 'class-validator';
+import { IsDate, IsInt, IsNumber, IsPositive } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateScreeningDto {
@@ -9,6 +9,11 @@ export class CreateScreeningDto {
   @ApiProperty()
   @IsDate()
   end: Date;
+
+  @ApiProperty()
+  @IsInt()
+  @IsPositive()
+  initialAvailableSeats: number;
 
   @ApiProperty()
   @IsNumber()

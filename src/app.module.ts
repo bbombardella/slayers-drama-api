@@ -11,6 +11,10 @@ import { ScreeningModule } from './screening/screening.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { ImageModule } from './image/image.module';
 import { DebugModule } from './debug/debug.module';
+import { StripeModule } from './stripe/stripe.module';
+import { OrderModule } from './order/order.module';
+import { ProductModule } from './product/product.module';
+import { ReservationModule } from './reservation/reservation.module';
 
 @Module({
   imports: [
@@ -25,6 +29,10 @@ import { DebugModule } from './debug/debug.module';
     CloudinaryModule,
     ImageModule,
     DebugModule,
+    StripeModule,
+    OrderModule,
+    ProductModule,
+    ReservationModule,
   ],
   controllers: [],
   providers: [AppService],

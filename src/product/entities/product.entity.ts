@@ -1,7 +1,7 @@
-import { Cinema } from '@prisma/client';
+import { Product } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CinemaEntity implements Cinema {
+export class ProductEntity implements Product {
   @ApiProperty()
   id: number;
 
@@ -9,7 +9,10 @@ export class CinemaEntity implements Cinema {
   name: string;
 
   @ApiProperty()
-  city: string;
+  enabled: boolean;
+
+  @ApiProperty()
+  price: number;
 
   @ApiProperty()
   createdAt: Date;
@@ -17,7 +20,10 @@ export class CinemaEntity implements Cinema {
   @ApiProperty()
   updatedAt: Date;
 
-  constructor(partial: Partial<CinemaEntity>) {
+  @ApiProperty()
+  cinemaId: number | null;
+
+  constructor(partial: Partial<Product>) {
     Object.assign(this, partial);
   }
 }
