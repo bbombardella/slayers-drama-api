@@ -64,21 +64,32 @@ export class ConfigCloudinary {
   }
 }
 
+export class ConfigStripe {
+  apiKey: string;
+
+  constructor(apiKey: string) {
+    this.apiKey = apiKey;
+  }
+}
+
 export class Config {
   database: ConfigDatabase;
   providers: ConfigProviders;
   tmdb: ConfigTMDB;
   cloudinary: ConfigCloudinary;
+  stripe: ConfigStripe;
 
   constructor(
     database: ConfigDatabase,
     providers: ConfigProviders,
     tmdb: ConfigTMDB,
     cloudinary: ConfigCloudinary,
+    stripe: ConfigStripe,
   ) {
     this.database = database;
     this.providers = providers;
     this.tmdb = tmdb;
     this.cloudinary = cloudinary;
+    this.stripe = stripe;
   }
 }

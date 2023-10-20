@@ -11,6 +11,6 @@ import { TmdbApiModule } from 'src/tmdb-api/tmdb-api.module';
 @Module({
   imports: [TmdbApiModule, CloudinaryModule, ImageModule],
   providers: [MovieService, PrismaService, CloudinaryService, ImageService],
-  controllers: [DebugController]
+  controllers: [DebugController],
 })
 export class DebugModule {}

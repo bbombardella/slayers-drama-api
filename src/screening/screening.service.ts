@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateScreeningDto } from './dto/create-screening.dto';
 import { UpdateScreeningDto } from './dto/update-screening.dto';
 import {
@@ -85,5 +85,53 @@ export class ScreeningService {
 
       return grouped;
     }, {});
+  }
+
+  async initialSeats(id: number): Promise<number> {
+    const idk: { initialAvailableSeats: number } =
+      await this.prismaService.screening.findUniqueOrThrow({
+        where: { id },
+        select: {
+          initialAvailableSeats: true,
+        },
+      });
+
+    return idk.initialAvailableSeats;
+  }
+
+  async availableSeats(id: number): Promise<number> {
+    const [initialSeats, takenSeats] = await Promise.all([
+      this.initialSeats(id),
+      this.prismaService.productsInReservation.aggregate({
+        where: {
+          reservation: {
+            order: {
+              status: {
+                equals: 'PAYED',
+              },
+            },
+          },
+        },
+        _sum: {
+          number: true,
+        },
+      }),
+    ]);
+
+    return initialSeats - takenSeats._sum.number;
+  }
+
+  async isThereAvailableSeats(id: number, seats: number = 0): Promise<boolean> {
+    if (seats < 0) {
+      throw new BadRequestException();
+    }
+
+    const availableSeats = await this.availableSeats(id);
+
+    if (seats === 0) {
+      return availableSeats > seats;
+    }
+
+    return availableSeats >= seats;
   }
 }

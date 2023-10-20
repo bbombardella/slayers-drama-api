@@ -6,7 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { RefreshStrategy } from './strategies/refresh.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { MicrosoftStrategy } from "./strategies/microsoft.strategy";
+import { MicrosoftStrategy } from './strategies/microsoft.strategy';
 
 @Module({
   imports: [

@@ -20,5 +20,4 @@ export class GenreEntity implements Genre {
   constructor(data: Partial<GenreEntity>) {
     Object.assign(this, data);
   }
-  
 }

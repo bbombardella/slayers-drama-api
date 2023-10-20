@@ -24,7 +24,11 @@ import { Roles } from '../decorators/roles.decorator';
 import { Role } from '@prisma/client';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { GenreEntity } from './entities/genre.entity';
-import { PaginatedResult, PaginateOptions } from '../prisma/paginator';
+import {
+  ApiOkResponsePaginated,
+  PaginatedResult,
+  PaginateOptions,
+} from '../prisma/paginator';
 
 @Controller('genre')
 @ApiTags('genre')
@@ -46,7 +50,7 @@ export class GenreController {
   @ApiOperation({
     summary: 'Retrieve all genres with pagination results',
   })
-  @ApiOkResponse({ type: PaginatedResult<GenreEntity> })
+  @ApiOkResponsePaginated(GenreEntity)
   findAll(
     @Query() pageable: PaginateOptions,
   ): Promise<PaginatedResult<GenreEntity>> {
@@ -100,7 +104,6 @@ export class GenreController {
     required: true,
   })
   @ApiOkResponse({ type: GenreEntity })
-  @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number): Promise<GenreEntity> {
     return this.genreService.remove(id);
   }
