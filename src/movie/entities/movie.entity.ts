@@ -37,6 +37,9 @@ export class MovieEntity implements Movie {
   published: boolean;
 
   @ApiProperty()
+  duration: number;
+
+  @ApiProperty()
   tmdbId: number;
 
   @ApiProperty()

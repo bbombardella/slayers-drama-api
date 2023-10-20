@@ -2,7 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsDate,
+  IsInt,
   IsNumber,
+  IsPositive,
   IsString,
   MinLength,
 } from 'class-validator';
@@ -42,4 +44,9 @@ export class UpdateMovieDto {
   @ApiProperty()
   @IsBoolean()
   published: boolean;
+
+  @ApiProperty()
+  @IsInt()
+  @IsPositive()
+  duration: number;
 }
