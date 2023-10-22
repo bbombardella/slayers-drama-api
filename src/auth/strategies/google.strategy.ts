@@ -31,7 +31,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 
     const user = await this.authService.findUserByGoogleId(payload.sub);
 
-    if (!user) {
+    if (!user?.id) {
       throw new UnauthorizedException();
     }
 

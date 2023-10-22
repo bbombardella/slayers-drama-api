@@ -32,7 +32,7 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
       accessToken,
     );
 
-    if (!user) {
+    if (!user?.id) {
       throw new UnauthorizedException();
     }
 

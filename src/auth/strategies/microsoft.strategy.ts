@@ -32,7 +32,7 @@ export class MicrosoftStrategy extends PassportStrategy(Strategy, 'microsoft') {
 
     const user = await this.authService.findUserByMicrosoftId(payload.sub);
 
-    if (!user) {
+    if (!user?.id) {
       throw new UnauthorizedException();
     }
 
