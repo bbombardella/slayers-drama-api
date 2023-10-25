@@ -124,9 +124,9 @@ async function populate_movies() {
     }
 
     try {
-      let url = `https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_API_KEY}&language=fr-FR`;
+      let url = `https://api.themoviedb.org/3/movie/${id}?api_key=${process.env.TMDB_API_KEY}&language=fr-FR`;
       let rrrr = await (await fetch(url)).json();
-      
+
       const movieTmdb = (rrrr as unknown as MovieDetails);
       cloudinary.config({
         api_key: process.env.CLOUDINARY_API_KEY,
@@ -143,7 +143,7 @@ async function populate_movies() {
         date = new Date(movieTmdb.release_date);
       } catch (e) {
         console.log('error', e);
-      }      
+      }
 
       const newMovie = await prisma.movie.create({
         data: {
@@ -156,6 +156,7 @@ async function populate_movies() {
           tagline: movieTmdb.tagline,
           tmdbId: movieTmdb.id,
           updatedAt: new Date(),
+          duration: movieTmdb.runtime,
           genres: {
             connectOrCreate: movieTmdb.genres.map((g) => ({
               where: {
@@ -202,8 +203,9 @@ async function populateScreenings() {
         data: {
           start: d[0],
           end: d[1],
-          cinemaId: c.id,
-          movieId: m.id
+          cinemaId: (c.id as number) ?? 1,
+          movieId: (m.id as number) ?? 1,
+          initialAvailableSeats: 100,
         }
       });
     }
