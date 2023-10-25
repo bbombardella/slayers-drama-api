@@ -4,6 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { ImageEntity } from 'src/image/entities/image.entity';
 import { GenreEntity } from 'src/genre/entities/genre.entity';
+import { ScreeningEntity } from 'src/screening/entities/screening.entity';
 
 export class MovieEntity implements Movie {
   @ApiProperty()
@@ -57,13 +58,20 @@ export class MovieEntity implements Movie {
   @ApiProperty({ type: GenreEntity, isArray: true })
   genres?: Array<GenreEntity>;
 
-  constructor({ poster, genres, ...data }: Partial<MovieEntity>) {
+  @ApiProperty({type: ScreeningEntity, isArray: true})
+  screening?: Array<ScreeningEntity>; 
+
+  constructor({ poster, genres, screening, ...data }: Partial<MovieEntity>) {
     if (poster) {
       this.poster = new ImageEntity(poster);
     }
 
     if (genres) {
       this.genres = genres.map((g) => new GenreEntity(g));
+    }
+
+    if (screening) {
+      this.screening = screening.map((s) => new ScreeningEntity(s));
     }
 
     Object.assign(this, data);

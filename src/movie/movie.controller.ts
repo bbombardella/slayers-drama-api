@@ -55,6 +55,21 @@ export class MovieController {
     return this.movieService.findAll(pageable);
   }
 
+  @Get('planned')
+  @ApiOperation({
+    summary: 'Retrieve all movies with a screening in the future with pagination results',
+  })
+  @ApiParam({
+    name: 'pageable',
+    description: 'Pagination options',
+    type: () => PaginateOptions,
+    required: false,
+  })
+  @ApiOkResponsePaginated(MovieEntity)
+  findAllPlanned(@Query() pageable: PaginateOptions): Promise<PaginatedResult<Movie>> {
+    return this.movieService.findAllPlanned(pageable);
+  }
+
   @Get('tmdb/:id')
   @ApiOperation({
     summary: 'Retrieve movie information from The Movie Database',
@@ -189,6 +204,22 @@ export class MovieController {
     @Param() queryParam: CountPopularParamsDto,
   ): Promise<MovieEntity[]> {
     return this.movieService.findMostPopular(queryParam.count);
+  }
+
+  @Get('popular/planned/:count')
+  @ApiOperation({
+    summary: 'Find most popular movies',
+  })
+  @ApiParam({
+    name: 'count',
+    description: 'Number of movies wanted',
+    required: true,
+  })
+  @ApiOkResponse({ type: MovieEntity, isArray: true })
+  getMostPopularPlanned(
+    @Param() queryParam: CountPopularParamsDto,
+  ): Promise<MovieEntity[]> {
+    return this.movieService.findMostPopularPlanned(queryParam.count);
   }
 
   @Get(':id')

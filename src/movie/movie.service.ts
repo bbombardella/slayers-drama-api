@@ -25,7 +25,7 @@ export class MovieService {
     private readonly tmdbApiService: TmdbApiService,
     private readonly cloudinaryService: CloudinaryService,
     private readonly imageService: ImageService,
-  ) {}
+  ) { }
 
   private get moviePaginator(): typeof paginator<
     Movie,
@@ -47,6 +47,27 @@ export class MovieService {
         where: this.getOnlyPublishedWhereClause(onlyPublished),
         include: {
           poster: true,
+          screenings: true,
+        },
+      },
+      pageable,
+    );
+  }
+
+  async findAllPlanned(
+    pageable?: PaginateOptions,
+    onlyPublished: boolean = true,
+  ): Promise<PaginatedResult<Movie>> {
+    return this.moviePaginator(
+      this.prismaService.movie,
+      {
+        where: { AND: [
+          this.getOnlyPublishedWhereClause(onlyPublished),
+          { screenings: { some: { start: { gt: new Date() } } } },
+        ] },
+        include: {
+          poster: true,
+          screenings: true,
         },
       },
       pageable,
@@ -60,6 +81,7 @@ export class MovieService {
         include: {
           genres: true,
           poster: true,
+          screenings: true,
         },
       }),
     );
@@ -240,6 +262,27 @@ export class MovieService {
   findMostPopular(count: number): Promise<MovieEntity[]> {
     return this.prismaService.movie.findMany({
       take: count,
+      orderBy: {
+        popularity: 'desc',
+      },
+      include: {
+        poster: true,
+      },
+    });
+  }
+
+  findMostPopularPlanned(count: number): Promise<MovieEntity[]> {
+    return this.prismaService.movie.findMany({
+      take: count,
+      where: {
+        screenings: {
+          some: {
+            start: {
+              gt: new Date(),
+            },
+          },
+        },
+      },
       orderBy: {
         popularity: 'desc',
       },
