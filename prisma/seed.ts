@@ -156,6 +156,7 @@ async function populate_movies() {
           tagline: movieTmdb.tagline,
           tmdbId: movieTmdb.id,
           updatedAt: new Date(),
+          published: true,
           duration: movieTmdb.runtime,
           genres: {
             connectOrCreate: movieTmdb.genres.map((g) => ({
