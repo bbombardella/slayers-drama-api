@@ -49,6 +49,8 @@ export class ScreeningController {
   }
 
   @Get()
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtGuard)
   @ApiOperation({
     summary: 'Retrieve all screenings with pagination results',
   })

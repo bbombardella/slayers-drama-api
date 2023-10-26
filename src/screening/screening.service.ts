@@ -81,8 +81,9 @@ export class ScreeningService {
 
   async remove(id: number): Promise<ScreeningEntity> {
     return new ScreeningEntity(
-      await this.prismaService.screening.delete({
+      await this.prismaService.screening.update({
         where: { id },
+        data: { active: false },
       }),
     );
   }
@@ -109,7 +110,10 @@ export class ScreeningService {
   async initialSeats(id: number): Promise<number> {
     const idk: { initialAvailableSeats: number } =
       await this.prismaService.screening.findUniqueOrThrow({
-        where: { id },
+        where: {
+          id,
+          active: true,
+        },
         select: {
           initialAvailableSeats: true,
         },

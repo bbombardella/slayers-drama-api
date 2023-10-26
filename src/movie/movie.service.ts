@@ -47,7 +47,11 @@ export class MovieService {
         where: this.getOnlyPublishedWhereClause(onlyPublished),
         include: {
           poster: true,
-          screenings: true,
+          screenings: {
+            where: {
+              active: true,
+            },
+          },
         },
       },
       pageable,
@@ -57,23 +61,34 @@ export class MovieService {
   async findAllPlanned(
     pageable?: PaginateOptions,
     onlyPublished: boolean = true,
-  ): Promise<PaginatedResult<Movie>> {
-    return this.moviePaginator(
+  ): Promise<PaginatedResult<MovieEntity>> {
+    const result = await this.moviePaginator(
       this.prismaService.movie,
       {
         where: {
           AND: [
             this.getOnlyPublishedWhereClause(onlyPublished),
-            { screenings: { some: { start: { gt: new Date() } } } },
+            {
+              screenings: {
+                some: {
+                  start: {
+                    gt: new Date(),
+                  },
+                  active: true,
+                },
+              },
+            },
           ],
         },
         include: {
           poster: true,
-          screenings: true,
         },
       },
       pageable,
     );
+    result.data.forEach((m) => (m = new MovieEntity(m)));
+
+    return result;
   }
 
   async findOne(id: number): Promise<MovieEntity> {
@@ -84,7 +99,11 @@ export class MovieService {
           include: {
             genres: true,
             poster: true,
-            screenings: true,
+            screenings: {
+              where: {
+                active: true,
+              },
+            },
           },
         })
         .catch(() => {
@@ -286,6 +305,7 @@ export class MovieService {
             start: {
               gt: new Date(),
             },
+            active: true,
           },
         },
       },

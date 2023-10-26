@@ -13,6 +13,9 @@ export class ScreeningEntity implements Screening {
   end: Date;
 
   @ApiProperty()
+  active: boolean;
+
+  @ApiProperty()
   initialAvailableSeats: number;
 
   @ApiProperty()

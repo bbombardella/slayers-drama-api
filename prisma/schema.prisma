@@ -80,6 +80,7 @@ model Screening {
   id                    Int           @id @default(autoincrement())
   start                 DateTime
   end                   DateTime
+  active                Boolean       @default(true)
   initialAvailableSeats Int
   cinema                Cinema        @relation(fields: [cinemaId], references: [id])
   cinemaId              Int

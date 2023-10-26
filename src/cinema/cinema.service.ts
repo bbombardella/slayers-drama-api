@@ -70,6 +70,7 @@ export class CinemaService {
             start: {
               gte: startOfDay,
             },
+            active: true,
           },
         },
       },
@@ -82,6 +83,7 @@ export class CinemaService {
             start: {
               gte: startOfDay,
             },
+            active: true,
           },
         },
       },
