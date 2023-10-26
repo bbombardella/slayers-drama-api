@@ -59,9 +59,9 @@ export class MovieEntity implements Movie {
   genres?: Array<GenreEntity>;
 
   @ApiProperty({type: ScreeningEntity, isArray: true})
-  screening?: Array<ScreeningEntity>; 
+  screenings?: Array<ScreeningEntity>;
 
-  constructor({ poster, genres, screening, ...data }: Partial<MovieEntity>) {
+  constructor({ poster, genres, screenings, ...data }: Partial<MovieEntity>) {
     if (poster) {
       this.poster = new ImageEntity(poster);
     }
@@ -70,8 +70,8 @@ export class MovieEntity implements Movie {
       this.genres = genres.map((g) => new GenreEntity(g));
     }
 
-    if (screening) {
-      this.screening = screening.map((s) => new ScreeningEntity(s));
+    if (screenings) {
+      this.screenings = screenings.map((s) => new ScreeningEntity(s));
     }
 
     Object.assign(this, data);
