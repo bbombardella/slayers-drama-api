@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateGenreDto } from './dto/create-genre.dto';
 import { UpdateGenreDto } from './dto/update-genre.dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -25,41 +25,60 @@ export class GenreService {
   }
 
   async create(createGenreDto: CreateGenreDto): Promise<GenreEntity> {
-    return this.prismaService.genre.create({
-      data: {
-        ...createGenreDto,
-      },
-    });
+    return new GenreEntity(
+      await this.prismaService.genre.create({
+        data: {
+          ...createGenreDto,
+        },
+      }),
+    );
   }
 
   async findAll(
     pageable?: PaginateOptions,
   ): Promise<PaginatedResult<GenreEntity>> {
-    return this.genrePaginator(this.prismaService.genre, undefined, pageable);
+    const result = await this.genrePaginator(
+      this.prismaService.genre,
+      undefined,
+      pageable,
+    );
+    result.data.forEach((g) => new GenreEntity(g));
+
+    return result;
   }
 
   async findOne(id: number): Promise<GenreEntity> {
-    return this.prismaService.genre.findUnique({
-      where: { id },
-    });
+    return new GenreEntity(
+      await this.prismaService.genre
+        .findUniqueOrThrow({
+          where: { id },
+        })
+        .catch(() => {
+          throw new NotFoundException();
+        }),
+    );
   }
 
   async update(
     id: number,
     updateGenreDto: UpdateGenreDto,
   ): Promise<GenreEntity> {
-    return this.prismaService.genre.update({
-      where: { id },
-      data: {
-        ...updateGenreDto,
-        updatedAt: new Date(),
-      },
-    });
+    return new GenreEntity(
+      await this.prismaService.genre.update({
+        where: { id },
+        data: {
+          ...updateGenreDto,
+          updatedAt: new Date(),
+        },
+      }),
+    );
   }
 
   async remove(id: number): Promise<GenreEntity> {
-    return this.prismaService.genre.delete({
-      where: { id },
-    });
+    return new GenreEntity(
+      await this.prismaService.genre.delete({
+        where: { id },
+      }),
+    );
   }
 }

@@ -18,11 +18,22 @@ export class PrismaExceptionFilter extends BaseExceptionFilter {
       const knowError = knownErrors[exception.code];
       response.status(knowError.status).json({
         statusCode: knowError.status,
-        message: exception.meta[knowError.metaKey] ?? exception.message,
+        message: this.getMessage(knowError, exception),
       });
     } else {
       // default 500 error code
       super.catch(exception, host);
     }
+  }
+
+  getMessage(
+    knowError: { status: HttpStatus; metaKey: string },
+    exception: PrismaClientKnownRequestError,
+  ): string {
+    if (exception?.meta && knowError.metaKey in exception.meta) {
+      return exception.meta[knowError.metaKey] as string;
+    }
+
+    return exception.message;
   }
 }

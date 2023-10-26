@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -26,46 +26,61 @@ export class ProductService {
   }
 
   async create(createProductDto: CreateProductDto): Promise<ProductEntity> {
-    return this.prismaService.product.create({
-      data: {
-        ...createProductDto,
-      },
-    });
+    return new ProductEntity(
+      await this.prismaService.product.create({
+        data: {
+          ...createProductDto,
+        },
+      }),
+    );
   }
 
   async findAll(
     pageable?: PaginateOptions,
   ): Promise<PaginatedResult<ProductEntity>> {
-    return this.productPaginator(
+    const result = await this.productPaginator(
       this.prismaService.product,
       undefined,
       pageable,
     );
+    result.data.forEach((p) => (p = new ProductEntity(p)));
+
+    return result;
   }
 
   async findOne(id: number): Promise<ProductEntity> {
-    return this.prismaService.product.findUnique({
-      where: { id },
-    });
+    return new ProductEntity(
+      await this.prismaService.product
+        .findUniqueOrThrow({
+          where: { id },
+        })
+        .catch(() => {
+          throw new NotFoundException();
+        }),
+    );
   }
 
   async update(
     id: number,
     updateProductDto: UpdateProductDto,
   ): Promise<ProductEntity> {
-    return this.prismaService.product.update({
-      where: { id },
-      data: {
-        ...updateProductDto,
-        updatedAt: new Date(),
-      },
-    });
+    return new ProductEntity(
+      await this.prismaService.product.update({
+        where: { id },
+        data: {
+          ...updateProductDto,
+          updatedAt: new Date(),
+        },
+      }),
+    );
   }
 
   async remove(id: number): Promise<ProductEntity> {
-    return this.prismaService.product.delete({
-      where: { id },
-    });
+    return new ProductEntity(
+      await this.prismaService.product.delete({
+        where: { id },
+      }),
+    );
   }
 
   mapProductToStripe(

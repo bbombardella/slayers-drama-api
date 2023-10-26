@@ -25,7 +25,7 @@ export class MovieService {
     private readonly tmdbApiService: TmdbApiService,
     private readonly cloudinaryService: CloudinaryService,
     private readonly imageService: ImageService,
-  ) { }
+  ) {}
 
   private get moviePaginator(): typeof paginator<
     Movie,
@@ -61,10 +61,12 @@ export class MovieService {
     return this.moviePaginator(
       this.prismaService.movie,
       {
-        where: { AND: [
-          this.getOnlyPublishedWhereClause(onlyPublished),
-          { screenings: { some: { start: { gt: new Date() } } } },
-        ] },
+        where: {
+          AND: [
+            this.getOnlyPublishedWhereClause(onlyPublished),
+            { screenings: { some: { start: { gt: new Date() } } } },
+          ],
+        },
         include: {
           poster: true,
           screenings: true,
@@ -76,14 +78,18 @@ export class MovieService {
 
   async findOne(id: number): Promise<MovieEntity> {
     return new MovieEntity(
-      await this.prismaService.movie.findUnique({
-        where: { id },
-        include: {
-          genres: true,
-          poster: true,
-          screenings: true,
-        },
-      }),
+      await this.prismaService.movie
+        .findUniqueOrThrow({
+          where: { id },
+          include: {
+            genres: true,
+            poster: true,
+            screenings: true,
+          },
+        })
+        .catch(() => {
+          throw new NotFoundException();
+        }),
     );
   }
 

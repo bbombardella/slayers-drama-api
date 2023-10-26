@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCinemaDto } from './dto/create-cinema.dto';
 import { UpdateCinemaDto } from './dto/update-cinema.dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -30,9 +30,11 @@ export class CinemaService {
   }
 
   async create(createCinemaDto: CreateCinemaDto): Promise<CinemaEntity> {
-    return this.prismaService.cinema.create({
-      data: createCinemaDto,
-    });
+    return new CinemaEntity(
+      await this.prismaService.cinema.create({
+        data: createCinemaDto,
+      }),
+    );
   }
 
   async findAll(
@@ -87,32 +89,42 @@ export class CinemaService {
   }
 
   async findOne(id: number): Promise<CinemaEntity> {
-    return this.prismaService.cinema.findUnique({
-      where: { id },
-    });
+    return new CinemaEntity(
+      await this.prismaService.cinema
+        .findUniqueOrThrow({
+          where: { id },
+        })
+        .catch(() => {
+          throw new NotFoundException();
+        }),
+    );
   }
 
   async update(
     id: number,
     updateCinemaDto: UpdateCinemaDto,
   ): Promise<CinemaEntity> {
-    return this.prismaService.cinema.update({
-      where: { id },
-      data: {
-        ...updateCinemaDto,
-        updatedAt: new Date(),
-      },
-    });
+    return new CinemaEntity(
+      await this.prismaService.cinema.update({
+        where: { id },
+        data: {
+          ...updateCinemaDto,
+          updatedAt: new Date(),
+        },
+      }),
+    );
   }
 
   async remove(id: number): Promise<CinemaEntity> {
-    return this.prismaService.cinema.delete({
-      where: { id },
-    });
+    return new CinemaEntity(
+      await this.prismaService.cinema.delete({
+        where: { id },
+      }),
+    );
   }
 
   async search(query: string): Promise<PaginatedResult<CinemaEntity>> {
-    return this.cinemaPaginator(this.prismaService.cinema, {
+    const result = await this.cinemaPaginator(this.prismaService.cinema, {
       where: {
         OR: [
           {
@@ -130,5 +142,8 @@ export class CinemaService {
         ],
       },
     });
+    result.data.forEach((c) => new CinemaEntity(c));
+
+    return result;
   }
 }

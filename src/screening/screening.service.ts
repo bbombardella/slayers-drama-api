@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateScreeningDto } from './dto/create-screening.dto';
 import { UpdateScreeningDto } from './dto/update-screening.dto';
 import {
@@ -28,44 +32,59 @@ export class ScreeningService {
   async create(
     createScreeningDto: CreateScreeningDto,
   ): Promise<ScreeningEntity> {
-    return this.prismaService.screening.create({
-      data: createScreeningDto,
-    });
+    return new ScreeningEntity(
+      await this.prismaService.screening.create({
+        data: createScreeningDto,
+      }),
+    );
   }
 
   async findAll(
     pageable?: PaginateOptions,
   ): Promise<PaginatedResult<ScreeningEntity>> {
-    return this.screeningPaginator(
+    const result = await this.screeningPaginator(
       this.prismaService.screening,
       undefined,
       pageable,
     );
+    result.data.forEach((s) => (s = new ScreeningEntity(s)));
+
+    return result;
   }
 
   async findOne(id: number): Promise<ScreeningEntity> {
-    return this.prismaService.screening.findUnique({
-      where: { id },
-    });
+    return new ScreeningEntity(
+      await this.prismaService.screening
+        .findUniqueOrThrow({
+          where: { id },
+        })
+        .catch(() => {
+          throw new NotFoundException();
+        }),
+    );
   }
 
   async update(
     id: number,
     updateScreeningDto: UpdateScreeningDto,
   ): Promise<ScreeningEntity> {
-    return this.prismaService.screening.update({
-      where: { id },
-      data: {
-        ...updateScreeningDto,
-        updatedAt: new Date(),
-      },
-    });
+    return new ScreeningEntity(
+      await this.prismaService.screening.update({
+        where: { id },
+        data: {
+          ...updateScreeningDto,
+          updatedAt: new Date(),
+        },
+      }),
+    );
   }
 
   async remove(id: number): Promise<ScreeningEntity> {
-    return this.prismaService.screening.delete({
-      where: { id },
-    });
+    return new ScreeningEntity(
+      await this.prismaService.screening.delete({
+        where: { id },
+      }),
+    );
   }
 
   groupScreeningByDate(screenings: ScreeningEntity[]): GroupedScreeningDto {
