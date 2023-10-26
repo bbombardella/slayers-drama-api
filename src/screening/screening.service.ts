@@ -44,7 +44,12 @@ export class ScreeningService {
   ): Promise<PaginatedResult<ScreeningEntity>> {
     const result = await this.screeningPaginator(
       this.prismaService.screening,
-      undefined,
+      {
+        include: {
+          movie: true,
+          cinema: true,
+        },
+      },
       pageable,
     );
     result.data.forEach((s) => (s = new ScreeningEntity(s)));

@@ -1,6 +1,7 @@
 import { Screening } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 import { CinemaEntity } from '../../cinema/entities/cinema.entity';
+import { MovieEntity } from '../../movie/entities/movie.entity';
 
 export class ScreeningEntity implements Screening {
   @ApiProperty()
@@ -33,9 +34,16 @@ export class ScreeningEntity implements Screening {
   @ApiProperty()
   cinema?: CinemaEntity;
 
-  constructor({ cinema, ...partial }: Partial<ScreeningEntity>) {
+  @ApiProperty({ type: () => MovieEntity })
+  movie?: MovieEntity;
+
+  constructor({ cinema, movie, ...partial }: Partial<ScreeningEntity>) {
     if (cinema) {
       this.cinema = new CinemaEntity(cinema);
+    }
+
+    if (movie) {
+      this.movie = new MovieEntity(movie);
     }
 
     Object.assign(this, partial);
