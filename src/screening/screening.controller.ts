@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ScreeningService } from './screening.service';
@@ -22,7 +23,11 @@ import {
 import { Roles } from '../decorators/roles.decorator';
 import { Role } from '@prisma/client';
 import { JwtGuard } from '../auth/guards/jwt.guard';
-import { ApiOkResponsePaginated, PaginatedResult } from '../prisma/paginator';
+import {
+  ApiOkResponsePaginated,
+  PaginatedResult,
+  PaginateOptions,
+} from '../prisma/paginator';
 import { ScreeningEntity } from './entities/screening.entity';
 
 @Controller('screening')
@@ -48,8 +53,10 @@ export class ScreeningController {
     summary: 'Retrieve all screenings with pagination results',
   })
   @ApiOkResponsePaginated(ScreeningEntity)
-  findAll(): Promise<PaginatedResult<ScreeningEntity>> {
-    return this.screeningService.findAll();
+  findAll(
+    @Query() pageable: PaginateOptions,
+  ): Promise<PaginatedResult<ScreeningEntity>> {
+    return this.screeningService.findAll(pageable);
   }
 
   @Get(':id')

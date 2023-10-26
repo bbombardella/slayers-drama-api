@@ -5,7 +5,6 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { applyDecorators } from '@nestjs/common';
-import { number } from 'joi';
 import { IsInt, IsOptional, IsPositive } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -61,13 +60,13 @@ export const ApiOkResponsePaginated = <DataDto extends Function>(
 };
 
 export class PaginateOptions {
-  @ApiProperty({ type: number, default: 1 })
+  @ApiProperty({ type: 'number', default: 1, required: false })
   @Type(() => Number)
   @IsInt()
   @IsPositive()
   @IsOptional()
   page?: number;
-  @ApiProperty({ type: number, default: 8 })
+  @ApiProperty({ type: 'number', default: 10, required: false })
   @Type(() => Number)
   @IsInt()
   @IsPositive()

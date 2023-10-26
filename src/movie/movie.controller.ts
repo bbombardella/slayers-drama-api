@@ -44,12 +44,6 @@ export class MovieController {
   @ApiOperation({
     summary: 'Retrieve all movies with pagination results',
   })
-  @ApiParam({
-    name: 'pageable',
-    description: 'Pagination options',
-    type: () => PaginateOptions,
-    required: false,
-  })
   @ApiOkResponsePaginated(MovieEntity)
   findAll(@Query() pageable: PaginateOptions): Promise<PaginatedResult<Movie>> {
     return this.movieService.findAll(pageable);
@@ -57,16 +51,13 @@ export class MovieController {
 
   @Get('planned')
   @ApiOperation({
-    summary: 'Retrieve all movies with a screening in the future with pagination results',
-  })
-  @ApiParam({
-    name: 'pageable',
-    description: 'Pagination options',
-    type: () => PaginateOptions,
-    required: false,
+    summary:
+      'Retrieve all movies with a screening in the future with pagination results',
   })
   @ApiOkResponsePaginated(MovieEntity)
-  findAllPlanned(@Query() pageable: PaginateOptions): Promise<PaginatedResult<Movie>> {
+  findAllPlanned(
+    @Query() pageable: PaginateOptions,
+  ): Promise<PaginatedResult<Movie>> {
     return this.movieService.findAllPlanned(pageable);
   }
 

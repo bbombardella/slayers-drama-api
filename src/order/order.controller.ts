@@ -22,7 +22,11 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { OrderEntity } from './entities/order.entity';
-import { ApiOkResponsePaginated, PaginatedResult } from '../prisma/paginator';
+import {
+  ApiOkResponsePaginated,
+  PaginatedResult,
+  PaginateOptions,
+} from '../prisma/paginator';
 import { CurrentUser } from '../decorators/current-user.decorator';
 import { UserEntity } from '../auth/entities/user.entity';
 import { PaymentCallbackParamsDto } from './dto/payment-callback-params.dto';
@@ -53,8 +57,10 @@ export class OrderController {
     summary: 'Retrieve all orders with pagination results',
   })
   @ApiOkResponsePaginated(OrderEntity)
-  findAll(): Promise<PaginatedResult<OrderEntity>> {
-    return this.orderService.findAll();
+  findAll(
+    @Query() pageable: PaginateOptions,
+  ): Promise<PaginatedResult<OrderEntity>> {
+    return this.orderService.findAll(pageable);
   }
 
   @Get('payment/callback')
