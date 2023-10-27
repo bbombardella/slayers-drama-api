@@ -181,8 +181,9 @@ export class MovieService {
 
   async delete(id: number): Promise<MovieEntity> {
     return new MovieEntity(
-      await this.prismaService.movie.delete({
+      await this.prismaService.movie.update({
         where: { id },
+        data: { published: false },
       }),
     );
   }
