@@ -1,4 +1,4 @@
-import { IsString, MinLength } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateCinemaDto {
@@ -11,4 +11,9 @@ export class CreateCinemaDto {
   @IsString()
   @MinLength(3)
   city: string;
+
+  @ApiProperty()
+  @IsBoolean()
+  @IsOptional()
+  active?: boolean;
 }

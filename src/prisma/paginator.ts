@@ -66,6 +66,7 @@ export class PaginateOptions {
   @IsPositive()
   @IsOptional()
   page?: number;
+
   @ApiProperty({ type: 'number', default: 10, required: false })
   @Type(() => Number)
   @IsInt()
@@ -73,6 +74,7 @@ export class PaginateOptions {
   @IsOptional()
   perPage?: number;
 }
+
 export type PaginateFunction = <T, K>(
   model: any,
   args?: K,

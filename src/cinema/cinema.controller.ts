@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   Query,
   UseGuards,
+  ParseBoolPipe,
 } from '@nestjs/common';
 import { CinemaService } from './cinema.service';
 import { CreateCinemaDto } from './dto/create-cinema.dto';
@@ -57,6 +58,20 @@ export class CinemaController {
     @Query() pageable: PaginateOptions,
   ): Promise<PaginatedResult<Cinema>> {
     return this.cinemaService.findAll(pageable);
+  }
+
+  @Get('with-non-active/:state')
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtGuard)
+  @ApiOperation({
+    summary: 'Retrieve all cinemas with pagination results',
+  })
+  @ApiOkResponsePaginated(CinemaEntity)
+  findAllWithNonActive(
+    @Query() pageable: PaginateOptions,
+    @Param('state', ParseBoolPipe) state: boolean,
+  ): Promise<PaginatedResult<Cinema>> {
+    return this.cinemaService.findAll(pageable, state);
   }
 
   @Get('search/:query')

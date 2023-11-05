@@ -75,6 +75,9 @@ export class MovieService {
                     gt: new Date(),
                   },
                   active: true,
+                  cinema: {
+                    active: true,
+                  },
                 },
               },
             },
@@ -99,11 +102,7 @@ export class MovieService {
           include: {
             genres: true,
             poster: true,
-            screenings: {
-              where: {
-                active: true,
-              },
-            },
+            screenings: true,
           },
         })
         .catch(() => {

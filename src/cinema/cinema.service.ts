@@ -39,8 +39,19 @@ export class CinemaService {
 
   async findAll(
     pageable?: PaginateOptions,
+    withNonActive: boolean = false,
   ): Promise<PaginatedResult<CinemaEntity>> {
-    return this.cinemaPaginator(this.prismaService.cinema, undefined, pageable);
+    return this.cinemaPaginator(
+      this.prismaService.cinema,
+      withNonActive
+        ? undefined
+        : {
+            where: {
+              active: true,
+            },
+          },
+      pageable,
+    );
   }
 
   async findOneDetails(id: number): Promise<CinemaDetailsDto> {
@@ -119,8 +130,9 @@ export class CinemaService {
 
   async remove(id: number): Promise<CinemaEntity> {
     return new CinemaEntity(
-      await this.prismaService.cinema.delete({
+      await this.prismaService.cinema.update({
         where: { id },
+        data: { active: false },
       }),
     );
   }
@@ -128,6 +140,7 @@ export class CinemaService {
   async search(query: string): Promise<PaginatedResult<CinemaEntity>> {
     const result = await this.cinemaPaginator(this.prismaService.cinema, {
       where: {
+        active: true,
         OR: [
           {
             name: {

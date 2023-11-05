@@ -12,6 +12,9 @@ export class CinemaEntity implements Cinema {
   city: string;
 
   @ApiProperty()
+  active: boolean;
+
+  @ApiProperty()
   createdAt: Date;
 
   @ApiProperty()

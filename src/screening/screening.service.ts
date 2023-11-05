@@ -32,9 +32,25 @@ export class ScreeningService {
   async create(
     createScreeningDto: CreateScreeningDto,
   ): Promise<ScreeningEntity> {
+    const { cinemaId, movieId, ...payload } = createScreeningDto;
+
     return new ScreeningEntity(
       await this.prismaService.screening.create({
-        data: createScreeningDto,
+        data: {
+          ...payload,
+          cinema: {
+            connect: {
+              id: cinemaId,
+              active: true,
+            },
+          },
+          movie: {
+            connect: {
+              id: movieId,
+              published: true,
+            },
+          },
+        },
       }),
     );
   }

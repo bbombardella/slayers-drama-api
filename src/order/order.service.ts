@@ -55,13 +55,31 @@ export class OrderService {
           status: 'PAYING',
           customerId: user.id,
           reservations: {
-            create: createOrderDto.reservations.map((r) => ({
-              ...r,
-              customerId: user.id,
-              products: {
-                create: r.products.map((p) => p),
-              },
-            })),
+            create: createOrderDto.reservations.map(
+              ({ screeningId, ...r }) => ({
+                ...r,
+                customer: {
+                  connect: {
+                    id: user.id,
+                  },
+                },
+                products: {
+                  create: r.products.map((p) => p),
+                },
+                screening: {
+                  connect: {
+                    id: screeningId,
+                    active: true,
+                    cinema: {
+                      active: true,
+                    },
+                    movie: {
+                      published: true,
+                    },
+                  },
+                },
+              }),
+            ),
           },
         },
         include: {

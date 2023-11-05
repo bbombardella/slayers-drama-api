@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseBoolPipe,
   ParseIntPipe,
   Patch,
   Post,
@@ -47,6 +48,20 @@ export class MovieController {
   @ApiOkResponsePaginated(MovieEntity)
   findAll(@Query() pageable: PaginateOptions): Promise<PaginatedResult<Movie>> {
     return this.movieService.findAll(pageable);
+  }
+
+  @Get('only-published/:state')
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtGuard)
+  @ApiOperation({
+    summary: 'Retrieve all movies with pagination results',
+  })
+  @ApiOkResponsePaginated(MovieEntity)
+  findAllOnlyPublished(
+    @Query() pageable: PaginateOptions,
+    @Param('state', ParseBoolPipe) state: boolean,
+  ): Promise<PaginatedResult<Movie>> {
+    return this.movieService.findAll(pageable, state);
   }
 
   @Get('planned')
