@@ -1,7 +1,7 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
-  NotFoundException,
 } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { StripeService } from '../stripe/stripe.service';
@@ -41,7 +41,7 @@ export class OrderService {
     user: UserEntity,
   ): Promise<OrderPaymentRequiredDto> {
     if (!(await this.checkSeats(createOrderDto))) {
-      throw new NotFoundException('Not enough seats');
+      throw new BadRequestException('Not enough seats');
     }
 
     let order;
@@ -175,14 +175,14 @@ export class OrderService {
       status = captured ? 'PAYED' : 'CANCELLED';
     } catch (e) {
       status = 'CANCELLED';
-    } finally {
-      return new OrderEntity(
-        await this.prismaService.order.update({
-          where: { id: order.id },
-          data: { status },
-        }),
-      );
     }
+
+    return new OrderEntity(
+      await this.prismaService.order.update({
+        where: { id: order.id },
+        data: { status },
+      }),
+    );
   }
 
   private checkSeats(order: CreateOrderDto | OrderEntity): Promise<boolean> {
