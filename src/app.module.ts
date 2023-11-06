@@ -15,7 +15,7 @@ import { StripeModule } from './stripe/stripe.module';
 import { OrderModule } from './order/order.module';
 import { ProductModule } from './product/product.module';
 import { ReservationModule } from './reservation/reservation.module';
-import { MailgunModule } from './mailgun/mailgun.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -34,7 +34,7 @@ import { MailgunModule } from './mailgun/mailgun.module';
     OrderModule,
     ProductModule,
     ReservationModule,
-    MailgunModule,
+    MailModule,
   ],
   controllers: [],
   providers: [AppService],
