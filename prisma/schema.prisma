@@ -152,6 +152,8 @@ model Order {
   stripeSessionId String?       @unique
   reservations    Reservation[]
   customerId      Int
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
   @@index([customerId])
 }

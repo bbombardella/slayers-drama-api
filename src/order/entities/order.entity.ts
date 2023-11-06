@@ -9,6 +9,12 @@ export class OrderEntity implements Order {
   id: number;
 
   @ApiProperty()
+  createdAt: Date;
+
+  @ApiProperty()
+  updatedAt: Date;
+
+  @ApiProperty()
   status: 'PAYING' | 'PAYED' | 'CANCELLED';
 
   @Exclude()

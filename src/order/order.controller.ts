@@ -63,6 +63,19 @@ export class OrderController {
     return this.orderService.findAll(pageable);
   }
 
+  @Get('mine')
+  @UseGuards(JwtGuard)
+  @ApiOperation({
+    summary: 'Retrieve my orders with pagination results',
+  })
+  @ApiOkResponsePaginated(OrderEntity)
+  findAllMine(
+    @Query() pageable: PaginateOptions,
+    @CurrentUser() currentUser: UserEntity,
+  ): Promise<PaginatedResult<OrderEntity>> {
+    return this.orderService.findAllMine(currentUser.id, pageable);
+  }
+
   @Get('payment/callback')
   @UseGuards(JwtGuard)
   @ApiOperation({

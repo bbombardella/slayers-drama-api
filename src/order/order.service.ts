@@ -122,15 +122,27 @@ export class OrderService {
 
   async findAll(
     pageable?: PaginateOptions,
+    args?: Parameters<typeof this.prismaService.order.findMany>[0],
   ): Promise<PaginatedResult<OrderEntity>> {
     const result = await this.orderPaginator(
       this.prismaService.order,
-      undefined,
+      args,
       pageable,
     );
     result.data.forEach((o) => (o = new OrderEntity(o)));
 
     return result;
+  }
+
+  async findAllMine(
+    id: number,
+    pageable?: PaginateOptions,
+  ): Promise<PaginatedResult<OrderEntity>> {
+    return this.findAll(pageable, {
+      where: {
+        customer: { id },
+      },
+    });
   }
 
   async findOne(id: number, user: UserEntity): Promise<OrderEntity> {
