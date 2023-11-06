@@ -26,11 +26,11 @@ export class MicrosoftStrategy extends PassportStrategy(Strategy, 'microsoft') {
   }
 
   async validate(payload: any): Promise<UserEntity> {
-    if (!payload?.sub) {
+    if (!payload?.oid) {
       throw new UnauthorizedException();
     }
 
-    const user = await this.authService.findUserByMicrosoftId(payload.sub);
+    const user = await this.authService.findUserByMicrosoftId(payload.oid);
 
     if (!user?.id) {
       throw new UnauthorizedException();

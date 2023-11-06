@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalGuard } from './guards/local.guard';
 import { TokenResponseDto } from './dto/token-response.dto';
@@ -17,6 +27,7 @@ import {
 import { UserEntity } from './entities/user.entity';
 import { LoginDto } from './dto/login.dto';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -83,5 +94,19 @@ export class AuthController {
     @CurrentUser() user: UserEntity,
   ): Promise<TokenResponseDto> {
     return this.authService.login(user);
+  }
+
+  @Patch(':id')
+  @UseGuards(JwtGuard)
+  @ApiOperation({
+    summary: 'Update an user',
+  })
+  @ApiCreatedResponse({ type: UserEntity })
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserDto: UpdateUserDto,
+    @CurrentUser() currentUser: UserEntity,
+  ): Promise<UserEntity> {
+    return this.authService.update(id, updateUserDto, currentUser);
   }
 }
