@@ -17,6 +17,7 @@ import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { ImageService } from '../image/image.service';
 import { MovieEntity } from './entities/movie.entity';
 import { UpdateMovieDto } from './dto/update-movie.dto';
+import { ScreeningService } from '../screening/screening.service';
 
 @Injectable()
 export class MovieService {
@@ -25,6 +26,7 @@ export class MovieService {
     private readonly tmdbApiService: TmdbApiService,
     private readonly cloudinaryService: CloudinaryService,
     private readonly imageService: ImageService,
+    private readonly screeningService: ScreeningService,
   ) {}
 
   private get moviePaginator(): typeof paginator<
@@ -94,8 +96,11 @@ export class MovieService {
     return result;
   }
 
-  async findOne(id: number): Promise<MovieEntity> {
-    return new MovieEntity(
+  async findOne(id: number, addSeats: boolean = false): Promise<MovieEntity> {
+    const startOfDay = new Date();
+    startOfDay.setUTCHours(0, 0, 0);
+
+    const movie = new MovieEntity(
       await this.prismaService.movie
         .findUniqueOrThrow({
           where: { id },
@@ -103,9 +108,18 @@ export class MovieService {
             genres: true,
             poster: true,
             screenings: {
+              orderBy: {
+                start: 'asc',
+              },
+              where: {
+                start: {
+                  gte: startOfDay,
+                },
+                active: true,
+              },
               include: {
                 cinema: true,
-              },
+              }
             },
           },
         })
@@ -113,6 +127,12 @@ export class MovieService {
           throw new NotFoundException();
         }),
     );
+
+    if (addSeats && movie.screenings?.length) {
+      await this.screeningService.addAvailableSeats(movie.screenings);
+    }
+
+    return movie;
   }
 
   async findOneTmdb(id: number): Promise<MovieDetails> {

@@ -12,7 +12,6 @@ import {
 } from '../prisma/paginator';
 import { Screening } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { GroupedScreeningDto } from './dto/grouped-screening.dto';
 import { ScreeningEntity } from './entities/screening.entity';
 
 @Injectable()
@@ -113,25 +112,6 @@ export class ScreeningService {
     );
   }
 
-  groupScreeningByDate(screenings: ScreeningEntity[]): GroupedScreeningDto {
-    return screenings.reduce((grouped, item) => {
-      // Vérifie si le groupe existe déjà
-      const startDate = new Date(item.start);
-      startDate.setUTCHours(0, 0, 0);
-
-      const dateKey = startDate.toISOString().split('T')[0];
-      if (!grouped[dateKey]) {
-        // Si le groupe n'existe pas, créez-le en utilisant la propriété comme clé
-        grouped[dateKey] = [];
-      }
-
-      // Ajoutez l'élément à la catégorie appropriée
-      grouped[dateKey].push(item);
-
-      return grouped;
-    }, {});
-  }
-
   async initialSeats(id: number): Promise<number> {
     const idk: { initialAvailableSeats: number } =
       await this.prismaService.screening.findUniqueOrThrow({
@@ -147,6 +127,33 @@ export class ScreeningService {
     return idk.initialAvailableSeats;
   }
 
+  private takenSeat(id: number) {
+    return this.prismaService.productsInReservation.aggregate({
+      where: {
+        reservation: {
+          order: {
+            status: {
+              equals: 'PAYED',
+            },
+          },
+          screening: { id },
+        },
+      },
+      _sum: {
+        number: true,
+      },
+    });
+  }
+
+  async addAvailableSeats(screenings: ScreeningEntity[]) {
+    await Promise.all(
+      screenings.map(async (s) => {
+        const result = await this.takenSeat(s.id);
+        s.availableSeats = s.initialAvailableSeats - result._sum.number ?? 0;
+      }),
+    );
+  }
+
   async availableSeats(id: number): Promise<number> {
     const [initialSeats, takenSeats] = await Promise.all([
       this.initialSeats(id),
@@ -158,6 +165,7 @@ export class ScreeningService {
                 equals: 'PAYED',
               },
             },
+            screening: { id },
           },
         },
         _sum: {

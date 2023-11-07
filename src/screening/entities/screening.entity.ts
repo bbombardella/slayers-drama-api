@@ -20,6 +20,9 @@ export class ScreeningEntity implements Screening {
   initialAvailableSeats: number;
 
   @ApiProperty()
+  availableSeats?: number;
+
+  @ApiProperty()
   cinemaId: number;
 
   @ApiProperty()

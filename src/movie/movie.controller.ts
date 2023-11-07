@@ -26,6 +26,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { Roles } from '../decorators/roles.decorator';
@@ -237,9 +238,18 @@ export class MovieController {
     description: "Movie's ID",
     required: true,
   })
+  @ApiQuery({
+    name: 'addSeats',
+    description: 'Add available seats to each screenings',
+    required: false,
+  })
   @ApiOkResponse({ type: MovieEntity })
-  findOne(@Param('id', ParseIntPipe) id: number): Promise<MovieEntity> {
-    return this.movieService.findOne(id);
+  findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('addSeats', new ParseBoolPipe({ optional: true }))
+    addSeats: boolean = true,
+  ): Promise<MovieEntity> {
+    return this.movieService.findOne(id, addSeats);
   }
 
   @Patch(':id')
