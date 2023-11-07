@@ -75,9 +75,6 @@ export class MovieService {
                     gt: new Date(),
                   },
                   active: true,
-                  cinema: {
-                    active: true,
-                  },
                 },
               },
             },
