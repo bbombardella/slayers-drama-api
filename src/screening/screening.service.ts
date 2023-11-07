@@ -78,6 +78,10 @@ export class ScreeningService {
       await this.prismaService.screening
         .findUniqueOrThrow({
           where: { id },
+          include: {
+            movie: true,
+            cinema: true,
+          },
         })
         .catch(() => {
           throw new NotFoundException();

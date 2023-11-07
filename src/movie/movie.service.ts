@@ -102,7 +102,11 @@ export class MovieService {
           include: {
             genres: true,
             poster: true,
-            screenings: true,
+            screenings: {
+              include: {
+                cinema: true,
+              },
+            },
           },
         })
         .catch(() => {
