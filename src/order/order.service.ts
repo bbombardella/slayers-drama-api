@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { StripeService } from '../stripe/stripe.service';
@@ -191,19 +192,24 @@ export class OrderService {
   async verify(sessionId: string, user: UserEntity): Promise<OrderEntity> {
     let status: $Enums.OrderStatus = 'CANCELLED';
 
-    const order = await this.prismaService.order.findUniqueOrThrow({
-      where: {
-        stripeSessionId: sessionId,
-        customerId: user.id,
-      },
-      include: {
-        reservations: {
-          include: {
-            products: true,
+    const order = await this.prismaService.order
+      .findUniqueOrThrow({
+        where: {
+          stripeSessionId: sessionId,
+          customerId: user.id,
+          status: 'PAYING',
+        },
+        include: {
+          reservations: {
+            include: {
+              products: true,
+            },
           },
         },
-      },
-    });
+      })
+      .catch(() => {
+        throw new NotFoundException();
+      });
     const canCapture = await this.checkSeats(order);
     //TODO add also a cron to verify status
 
