@@ -48,6 +48,24 @@ export class ProductService {
     return result;
   }
 
+  async findAllInsideCinema(cinemaId: number): Promise<ProductEntity[]> {
+    const result = await this.prismaService.product.findMany({
+      where: {
+        OR: [
+          {
+            cinemaId,
+          },
+          {
+            cinemaId: null,
+          },
+        ],
+        enabled: true,
+      },
+    });
+
+    return result.map((r) => new ProductEntity(r));
+  }
+
   async findOne(id: number): Promise<ProductEntity> {
     return new ProductEntity(
       await this.prismaService.product

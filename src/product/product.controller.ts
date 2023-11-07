@@ -107,4 +107,15 @@ export class ProductController {
   remove(@Param('id', ParseIntPipe) id: number): Promise<ProductEntity> {
     return this.productService.remove(id);
   }
+
+  @Get('cinema/:id')
+  @ApiOperation({
+    summary: 'Retrieve all products available in the cinema',
+  })
+  @ApiOkResponse({ type: ProductEntity, isArray: true })
+  findAllInsideCinema(
+    @Param('id', ParseIntPipe) cinemaId: number,
+  ): Promise<ProductEntity[]> {
+    return this.productService.findAllInsideCinema(cinemaId);
+  }
 }
