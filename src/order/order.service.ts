@@ -64,7 +64,15 @@ export class OrderService {
                   },
                 },
                 products: {
-                  create: r.products.map((p) => p),
+                  create: r.products.map((p) => ({
+                    product: {
+                      connect: {
+                        id: p.productId,
+                        enabled: true,
+                      },
+                    },
+                    number: p.number,
+                  })),
                 },
                 screening: {
                   connect: {
