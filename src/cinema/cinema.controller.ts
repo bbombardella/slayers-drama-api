@@ -29,7 +29,6 @@ import {
 import { Cinema, Role } from '@prisma/client';
 import { Roles } from '../decorators/roles.decorator';
 import { JwtGuard } from '../auth/guards/jwt.guard';
-import { CinemaDetailsDto } from './dto/cinema-details.dto';
 import { SearchDto } from '../dto/search.dto';
 import { CinemaEntity } from './entities/cinema.entity';
 
@@ -86,22 +85,6 @@ export class CinemaController {
   @ApiOkResponsePaginated(CinemaEntity)
   search(@Param() params: SearchDto): Promise<PaginatedResult<CinemaEntity>> {
     return this.cinemaService.search(params.query);
-  }
-
-  @Get(':id/details')
-  @ApiOperation({
-    summary: "Retrieve cinema's details by its id",
-  })
-  @ApiParam({
-    name: 'id',
-    description: "Cinema's ID",
-    required: true,
-  })
-  @ApiOkResponse({ type: CinemaDetailsDto })
-  findOneDetails(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<CinemaDetailsDto> {
-    return this.cinemaService.findOneDetails(id);
   }
 
   @Get(':id')

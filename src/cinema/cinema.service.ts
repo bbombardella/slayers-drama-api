@@ -8,7 +8,6 @@ import {
   paginator,
 } from '../prisma/paginator';
 import { Cinema } from '@prisma/client';
-import { CinemaDetailsDto } from './dto/cinema-details.dto';
 import { ScreeningService } from '../screening/screening.service';
 import { CinemaEntity } from './entities/cinema.entity';
 
@@ -52,53 +51,6 @@ export class CinemaService {
           },
       pageable,
     );
-  }
-
-  async findOneDetails(id: number): Promise<CinemaDetailsDto> {
-    const promises = await Promise.all([
-      this.findOne(id),
-      this.findLatestMovies(id),
-    ]);
-
-    return {
-      cinema: promises[0],
-      movies: promises[1].map((m) => ({
-        ...m,
-        screenings: this.screeningService.groupScreeningByDate(m.screenings),
-      })),
-    };
-  }
-
-  private async findLatestMovies(cinemaId: number) {
-    const startOfDay = new Date();
-    startOfDay.setUTCHours(0, 0, 0);
-
-    return this.prismaService.movie.findMany({
-      where: {
-        screenings: {
-          some: {
-            cinemaId,
-            start: {
-              gte: startOfDay,
-            },
-            active: true,
-          },
-        },
-      },
-      include: {
-        screenings: {
-          orderBy: {
-            start: 'asc',
-          },
-          where: {
-            start: {
-              gte: startOfDay,
-            },
-            active: true,
-          },
-        },
-      },
-    });
   }
 
   async findOne(id: number): Promise<CinemaEntity> {
