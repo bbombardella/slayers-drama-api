@@ -10,7 +10,6 @@ import { CinemaModule } from './cinema/cinema.module';
 import { ScreeningModule } from './screening/screening.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { ImageModule } from './image/image.module';
-import { DebugModule } from './debug/debug.module';
 import { StripeModule } from './stripe/stripe.module';
 import { OrderModule } from './order/order.module';
 import { ProductModule } from './product/product.module';
@@ -29,7 +28,6 @@ import { MailModule } from './mail/mail.module';
     ScreeningModule,
     CloudinaryModule,
     ImageModule,
-    DebugModule,
     StripeModule,
     OrderModule,
     ProductModule,
