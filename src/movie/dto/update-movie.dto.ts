@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsBoolean,
   IsDate,
@@ -15,8 +16,8 @@ export class UpdateMovieDto {
   @MinLength(3)
   title: string;
 
-  @ApiProperty()
-  @IsDate()
+  @ApiProperty({ type: 'string' })
+  @Transform(({ value }) => { new Date(value) })
   releaseDate: Date;
 
   @ApiProperty()
@@ -24,16 +25,34 @@ export class UpdateMovieDto {
   @MinLength(3)
   overview: string;
 
-  @ApiProperty()
-  @IsNumber()
+  @ApiProperty({ type: 'number' })
+  @Transform(({ value }) => {
+    if (value) {
+      return value as number;
+    }else{
+      return -1;
+    }
+  })
   popularity: number;
 
-  @ApiProperty()
-  @IsNumber()
+  @ApiProperty({ type: 'number' })
+  @Transform(({ value }) => {
+    if (value) {
+      return value as number;
+    }else{
+      return -1;
+    }
+  })
   voteAverage: number;
 
-  @ApiProperty()
-  @IsNumber()
+  @ApiProperty({ type: 'number' })
+  @Transform(({ value }) => {
+    if (value) {
+      return value as number;
+    }else{
+      return -1;
+    }
+  })
   budget: number;
 
   @ApiProperty()
