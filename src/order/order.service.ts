@@ -28,7 +28,7 @@ export class OrderService {
     private readonly stripeService: StripeService,
     private readonly reservationService: ReservationService,
     private readonly mailService: MailService,
-  ) {}
+  ) { }
 
   private get orderPaginator(): typeof paginator<
     Order,
@@ -65,15 +65,7 @@ export class OrderService {
                   },
                 },
                 products: {
-                  create: r.products.map((p) => ({
-                    product: {
-                      connect: {
-                        id: p.productId,
-                        enabled: true,
-                      },
-                    },
-                    number: p.number,
-                  })),
+                  create: r.products.map((p) => p),
                 },
                 screening: {
                   connect: {
@@ -200,9 +192,12 @@ export class OrderService {
           status: 'PAYING',
         },
         include: {
-          reservations: {
-            include: {
-              products: true,
+        reservations: {
+          include: {
+            products: {
+              include: {
+                product: true,
+              },
             },
           },
         },
@@ -230,6 +225,20 @@ export class OrderService {
         data: { status },
         include: {
           customer: true,
+          reservations: {
+            include: {
+              products: {
+                include: {
+                  product: true,
+                },
+              },
+              screening: {
+                include: {
+                  movie: true,
+                },
+              },
+            },
+          },
         },
       }),
     );
@@ -254,11 +263,26 @@ export class OrderService {
         };
         break;
       case 'PAYED':
+        let computedHtml = '<ul><br>'
+        order.reservations.forEach((r) => {
+          computedHtml += `<li>`
+          r.products.forEach((p) => {
+            computedHtml += `[${p.product.name} (${p.product.price}€) x ${p.number}]<br>`
+          });
+          computedHtml += `<strong>${r.screening.movie.title}</strong> à <strong>${r.screening.start.toUTCString()}</strong>`
+          computedHtml += `</li><br>`
+        });
+        computedHtml += '</ul>'
         config = {
           to: order.customer.email,
           subject: `Votre commande n°${order.id}`,
-          html: `<h1>A propos de votre commande n°${order.id}</h1>
-                <p>Félicitations ! Votre commande a été validé avec succès.</p>`,
+          html: `
+              <h1>A propos de votre commande n°${order.id}</h1>
+              <p>Félicitations ! Votre commande a été validé avec succès.</p>
+              <p>Vous pouvez retrouver le détail de votre commande sur votre espace client.</p>
+              <p>Vous pouvez également retrouver le détail de votre commande ci-dessous :</p>
+              ${computedHtml}
+                `,
         };
         break;
     }
@@ -266,7 +290,6 @@ export class OrderService {
     if (!config) {
       return;
     }
-
     return this.mailService.sendMail(config).catch(null);
   }
 
