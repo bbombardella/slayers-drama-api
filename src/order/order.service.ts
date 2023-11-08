@@ -168,6 +168,11 @@ export class OrderService {
             screening: {
               include: {
                 cinema: true,
+                movie: {
+                  include: {
+                    poster: true,
+                  },
+                },
               },
             },
           },
