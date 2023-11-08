@@ -19,9 +19,8 @@ export class StripeService {
         capture_method: 'manual',
       },
       payment_method_types: ['card', 'paypal'],
-      //TODO to replace with right urls
-      success_url: `http://localhost:3000/order/payment/callback?sessionId={CHECKOUT_SESSION_ID}`,
-      cancel_url: `http://localhost:3000/order/payment/callback?sessionId={CHECKOUT_SESSION_ID}`,
+      success_url: this.apiConfigService.stripe.redirectUrl,
+      cancel_url: this.apiConfigService.stripe.redirectUrl,
     };
   }
 

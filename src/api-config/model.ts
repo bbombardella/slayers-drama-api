@@ -66,9 +66,11 @@ export class ConfigCloudinary {
 
 export class ConfigStripe {
   apiKey: string;
+  redirectUrl: string;
 
-  constructor(apiKey: string) {
+  constructor(apiKey: string, redirectUrl: string) {
     this.apiKey = apiKey;
+    this.redirectUrl = redirectUrl;
   }
 }
 

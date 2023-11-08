@@ -13,6 +13,7 @@ export const validationSchema = Joi.object({
   CLOUDINARY_API_KEY: Joi.string().not(Joi.string().empty()),
   CLOUDINARY_API_SECRET: Joi.string().not(Joi.string().empty()),
   STRIPE_API_KEY: Joi.string().not(Joi.string().empty()),
+  STRIPE_VERIFY_URL: Joi.string().not(Joi.string().empty()),
   MAILGUN_NAME: Joi.string().not(Joi.string().empty()),
   MAILGUN_API_KEY: Joi.string().not(Joi.string().empty()),
   MAILGUN_DOMAIN: Joi.string().not(Joi.string().empty()),

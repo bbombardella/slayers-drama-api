@@ -28,6 +28,7 @@ export default (): Config => ({
   },
   stripe: {
     apiKey: process.env.STRIPE_API_KEY,
+    redirectUrl: process.env.STRIPE_VERIFY_URL,
   },
   mailgun: {
     name: process.env.MAILGUN_NAME,
