@@ -1,13 +1,14 @@
 import { IsBoolean, IsDate, IsInt, IsPositive } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 
 export class CreateScreeningDto {
-  @ApiProperty()
-  @IsDate()
+  @ApiProperty({ type: 'string' })
+  @Transform(({ value }) => { new Date(value) })
   start: Date;
 
-  @ApiProperty()
-  @IsDate()
+  @ApiProperty({ type: 'string' })
+  @Transform(({ value }) => { new Date(value) })
   end: Date;
 
   @ApiProperty()
