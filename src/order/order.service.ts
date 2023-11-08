@@ -28,7 +28,7 @@ export class OrderService {
     private readonly stripeService: StripeService,
     private readonly reservationService: ReservationService,
     private readonly mailService: MailService,
-  ) { }
+  ) {}
 
   private get orderPaginator(): typeof paginator<
     Order,
@@ -65,7 +65,15 @@ export class OrderService {
                   },
                 },
                 products: {
-                  create: r.products.map((p) => p),
+                  create: r.products.map((p) => ({
+                    product: {
+                      connect: {
+                        id: p.productId,
+                        enabled: true,
+                      },
+                    },
+                    number: p.number,
+                  })),
                 },
                 screening: {
                   connect: {
