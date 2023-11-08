@@ -192,14 +192,15 @@ export class OrderService {
           status: 'PAYING',
         },
         include: {
-        reservations: {
-          include: {
-            products: {
-              include: {
-                product: true,
+          reservations: {
+            include: {
+              products: {
+                include: {
+                  product: true,
+                },
               },
             },
-          },
+          }
         },
       })
       .catch(() => {
