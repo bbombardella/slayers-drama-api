@@ -213,7 +213,7 @@ export class OrderService {
                 },
               },
             },
-          }
+          },
         },
       })
       .catch(() => {
@@ -277,16 +277,18 @@ export class OrderService {
         };
         break;
       case 'PAYED':
-        let computedHtml = '<ul><br>'
+        let computedHtml = '<ul><br>';
         order.reservations.forEach((r) => {
-          computedHtml += `<li>`
+          computedHtml += `<li>`;
           r.products.forEach((p) => {
-            computedHtml += `[${p.product.name} (${p.product.price}€) x ${p.number}]<br>`
+            computedHtml += `[${p.product.name} (${p.product.price}€) x ${p.number}]<br>`;
           });
-          computedHtml += `<strong>${r.screening.movie.title}</strong> à <strong>${r.screening.start.toUTCString()}</strong>`
-          computedHtml += `</li><br>`
+          computedHtml += `<strong>${
+            r.screening.movie.title
+          }</strong> à <strong>${r.screening.start.toUTCString()}</strong>`;
+          computedHtml += `</li><br>`;
         });
-        computedHtml += '</ul>'
+        computedHtml += '</ul>';
         config = {
           to: order.customer.email,
           subject: `Votre commande n°${order.id}`,
