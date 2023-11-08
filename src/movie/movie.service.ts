@@ -156,6 +156,7 @@ export class MovieService {
 
     const newMovie = await this.prismaService.movie.create({
       data: {
+        published: true,
         title: movieTmdb.title,
         releaseDate: new Date(movieTmdb.release_date),
         overview: movieTmdb.overview,
