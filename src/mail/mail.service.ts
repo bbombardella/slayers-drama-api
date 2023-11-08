@@ -14,6 +14,7 @@ export class MailService {
     this.mailgun = new Mailgun(formData).client({
       username: this.apiConfigService.mailgun.name,
       key: this.apiConfigService.mailgun.apiKey,
+      url: 'https://api.eu.mailgun.net/',
     });
   }
 
