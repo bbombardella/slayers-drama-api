@@ -1,0 +1,165 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pg_trgm]
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  firstName    String
+  lastName     String
+  email        String        @unique
+  password     String
+  googleId     String?       @unique
+  microsoftId  String?       @unique
+  refreshToken String?
+  role         Role          @default(USER)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  reservations Reservation[]
+  orders       Order[]
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Genre {
+  id        Int      @id @default(autoincrement())
+  title     String
+  tmdbId    Int      @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  movies    Movie[]
+}
+
+model Movie {
+  id            Int         @id @default(autoincrement())
+  title         String
+  releaseDate   DateTime
+  overview      String
+  popularity    Decimal
+  voteAverage   Decimal
+  budget        Decimal
+  poster        Image       @relation(fields: [posterImageId], references: [id])
+  tagline       String
+  published     Boolean     @default(false)
+  duration      Int
+  tmdbId        Int         @unique
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  genres        Genre[]
+  screenings    Screening[]
+  posterImageId Int         @unique
+
+  @@index([title(ops: raw("gin_trgm_ops"))], type: Gin)
+  @@index([tagline(ops: raw("gin_trgm_ops"))], type: Gin)
+  @@index([overview(ops: raw("gin_trgm_ops"))], type: Gin)
+}
+
+model Cinema {
+  id         Int         @id @default(autoincrement())
+  name       String
+  city       String
+  active     Boolean     @default(true)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  screenings Screening[]
+  products   Product[]
+
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin)
+  @@index([city(ops: raw("gin_trgm_ops"))], type: Gin)
+}
+
+model Screening {
+  id                    Int           @id @default(autoincrement())
+  start                 DateTime
+  end                   DateTime
+  active                Boolean       @default(true)
+  initialAvailableSeats Int
+  cinema                Cinema        @relation(fields: [cinemaId], references: [id])
+  cinemaId              Int
+  movie                 Movie         @relation(fields: [movieId], references: [id])
+  movieId               Int
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  reservations          Reservation[]
+
+  @@index([cinemaId])
+  @@index([movieId])
+}
+
+model Image {
+  id                 Int      @id @default(autoincrement())
+  url                String
+  cloudinaryPublicId String   @unique
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  movies             Movie[]
+}
+
+model Product {
+  id           Int                     @id @default(autoincrement())
+  name         String
+  enabled      Boolean                 @default(true)
+  price        Int
+  cinema       Cinema?                 @relation(fields: [cinemaId], references: [id])
+  reservations ProductsInReservation[]
+  createdAt    DateTime                @default(now())
+  updatedAt    DateTime                @updatedAt
+  cinemaId     Int?
+
+  @@index([cinemaId])
+}
+
+model Reservation {
+  id          Int                     @id @default(autoincrement())
+  screening   Screening               @relation(fields: [screeningId], references: [id])
+  customer    User                    @relation(fields: [customerId], references: [id])
+  products    ProductsInReservation[]
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
+  screeningId Int
+  customerId  Int
+  order       Order                   @relation(fields: [orderId], references: [id])
+  orderId     Int
+
+  @@index([screeningId])
+  @@index([customerId])
+  @@index([orderId])
+}
+
+model ProductsInReservation {
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
+  product       Product     @relation(fields: [productId], references: [id])
+  reservationId Int
+  productId     Int
+  number        Int         @db.SmallInt
+
+  @@id([productId, reservationId])
+}
+
+model Order {
+  id              Int           @id @default(autoincrement())
+  status          OrderStatus
+  customer        User          @relation(fields: [customerId], references: [id])
+  stripeSessionId String?       @unique
+  reservations    Reservation[]
+  customerId      Int
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([customerId])
+}
+
+enum OrderStatus {
+  PAYING
+  PAYED
+  CANCELLED
+}
